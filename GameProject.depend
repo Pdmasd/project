@@ -2,17 +2,18 @@
 1584205420 source:c:\users\mac\onedrive\desktop\c++\ltncgame\gameproject\main.cpp
 	<iostream>
 
-1741667888 source:c:\users\mac\onedrive\desktop\c++\gameproject\main.cpp
+1742399374 source:c:\users\mac\onedrive\desktop\c++\gameproject\main.cpp
 	<iostream>
 	<SDL.h>
 	<SDL_image.h>
 	"graphic.h"
 	"defs.h"
+	"shapes.h"
 
 1741668202 source:c:\users\mac\onedrive\desktop\c++\gameproject\graphic.cpp
 	"graphic.h"
 
-1741668180 c:\users\mac\onedrive\desktop\c++\gameproject\graphic.h
+1742399563 c:\users\mac\onedrive\desktop\c++\gameproject\graphic.h
 	<SDL.h>
 	<SDL_image.h>
 
@@ -415,5 +416,32 @@
 	"begin_code.h"
 	"close_code.h"
 
-1741667981 c:\users\mac\onedrive\desktop\c++\gameproject\defs.h
+1742399134 c:\users\mac\onedrive\desktop\c++\gameproject\defs.h
+
+1741690714 source:c:\users\mac\onedrive\desktop\c++\gameproject\player.cpp
+	"player.h"
+
+1741690714 c:\users\mac\onedrive\desktop\c++\gameproject\player.h
+	"graphic.h"
+
+1742398299 source:c:\users\mac\onedrive\desktop\c++\gameproject\shapes.cpp
+	"Shapes.h"
+	<cstdlib>
+
+1742394698 c:\users\mac\onedrive\desktop\c++\gameproject\shapes.hpp
+
+1742397710 c:\users\mac\onedrive\desktop\c++\gameproject\shapes.h
+
+1742398204 source:c:\users\mac\onedrive\desktop\c++\gameproject\gameobject.cpp
+	"gameObject.h"
+
+1742397940 c:\users\mac\onedrive\desktop\c++\gameproject\gameobject.h
+	"shapes.h"
+
+1742399018 source:c:\users\mac\onedrive\desktop\c++\gameproject\fallingobject.cpp
+	"FallingObject.h"
+	"defs.h"
+
+1742398544 c:\users\mac\onedrive\desktop\c++\gameproject\fallingobject.h
+	"gameObject.h"
 
