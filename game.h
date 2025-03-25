@@ -9,6 +9,8 @@
 #include "player.h"
 #include "enemy.h"
 
+#include <cstdlib>
+#include <fstream>
 class Game {
 public:
     SDL_Window* window;

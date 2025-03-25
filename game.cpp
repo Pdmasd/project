@@ -12,8 +12,8 @@ Game::Game(): player(100, 100, nullptr){
         cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
         running = false;
     }
-    window = SDL_CreateWindow("Battle City", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                                SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                                FULL_SCREEN_WIDTH, FULL_SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (!window) {
         cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
         running = false;
@@ -69,12 +69,65 @@ Game::~Game() {
     SDL_Quit();
 }
 
+//void Game::generateWalls() {
+//    for (int i = 3; i < MAP_HEIGHT - 3; i += 2) {
+//        for (int j = 3; j < MAP_WIDTH - 3; j += 2) {
+//            WallType type = (rand() % 4 == 0) ? WallType::STEEL : WallType::BRICK;
+//            walls.emplace_back(j * TILE_SIZE, i * TILE_SIZE, renderer, (type == WallType::BRICK ? "image/brick.png" : "image/steel.png"), type);
+//        }
+//    }
+//
+//    // Thêm một số khối LEAF và WATER làm chướng ngại vật
+//    walls.emplace_back(5 * TILE_SIZE, 5 * TILE_SIZE, renderer, "image/leaf.png", WallType::LEAF);
+//    walls.emplace_back(6 * TILE_SIZE, 6 * TILE_SIZE, renderer, "image/water.png", WallType::WATER);
+//}
+
 void Game::generateWalls() {
-    for (int i = 3; i < MAP_HEIGHT - 3; i += 2) {
-        for (int j = 3; j < MAP_WIDTH - 3; j += 2) {
-            walls.emplace_back(j * TILE_SIZE, i * TILE_SIZE, renderer, "image/wall.png");
+    std::ifstream mapFile("map.txt");
+    if (!mapFile.is_open()) {
+        SDL_Log("Không thể mở file map.txt");
+        return;
+    }
+
+    vector<string> mapData;
+    string line;
+    while (getline(mapFile, line)) {
+        mapData.push_back(line);
+    }
+    mapFile.close();
+
+    // Duyệt qua mapData và tạo tường
+    for (int y = 0; y < mapData.size(); ++y) {
+        for (int x = 0; x < mapData[y].size(); ++x) {
+            char tile = mapData[y][x];
+            WallType type;
+            const char* texturePath = nullptr;
+
+            switch (tile) {
+                case 'B':
+                    type = WallType::BRICK;
+                    texturePath = "image/brick.png";
+                    break;
+                case 'S':
+                    type = WallType::STEEL;
+                    texturePath = "image/steel.png";
+                    break;
+                case 'L':
+                    type = WallType::LEAF;
+                    texturePath = "image/leaf.png";
+                    break;
+                case 'W':
+                    type = WallType::WATER;
+                    texturePath = "image/water.png";
+                    break;
+                default:
+                    continue; // Bỏ qua ô trống
+            }
+            walls.emplace_back(x * TILE_SIZE, y * TILE_SIZE, renderer, texturePath, type);
         }
     }
+
+    SDL_Log("Bản đồ đã tải thành công!");
 }
 
 void Game::handleEvents() {
@@ -84,10 +137,10 @@ void Game::handleEvents() {
             running = false;
         } else if (event.type == SDL_KEYDOWN) {
             switch (event.key.keysym.sym) {
-                case SDLK_UP: player.move(0, - MOVE_SPEED, walls); break;
-                case SDLK_DOWN: player.move(0, MOVE_SPEED, walls); break;
-                case SDLK_LEFT: player.move(- MOVE_SPEED, 0, walls); break;
-                case SDLK_RIGHT: player.move(MOVE_SPEED, 0, walls); break;
+                case SDLK_UP: player.move(0, - MOVE_SPEED, walls, enemies); break;
+                case SDLK_DOWN: player.move(0, MOVE_SPEED, walls, enemies); break;
+                case SDLK_LEFT: player.move(- MOVE_SPEED, 0, walls, enemies); break;
+                case SDLK_RIGHT: player.move(MOVE_SPEED, 0, walls, enemies); break;
                 case SDLK_SPACE: player.shoot(); break;
             }
         }
@@ -97,16 +150,21 @@ void Game::handleEvents() {
 void Game::update() {
     player.updateBullets();
 
+    ///Đạn player bắn tường
     for (auto& bullet : player.bullets) {
         for (auto& wall : walls) {
             if (wall.active && SDL_HasIntersection(&bullet.rect, &wall.rect)) {
-                wall.active = false;
-                bullet.active = false;
+                if (wall.type == WallType::BRICK) {
+                    wall.active = false;
+                    bullet.active = false;
+                } else if (wall.type == WallType::STEEL) {
+                    bullet.active = false;
+                }
                 break;
             }
         }
     }
-
+    ///Đạn bắn enemy
     for (auto& bullet : player.bullets) {
         for (auto& enemy : enemies) {
             if (enemy.active && SDL_HasIntersection(&bullet.rect, &enemy.rect)) {
@@ -116,8 +174,9 @@ void Game::update() {
         }
     }
 
+    ///enemy hành động
     for (auto& enemy : enemies) {
-        enemy.move(walls);
+        enemy.move(walls, player, enemies);
         enemy.updateBullets();
         if (rand() % 100 < 2) {
             enemy.shoot();
@@ -128,8 +187,12 @@ void Game::update() {
         for (auto& bullet : enemy.bullets) {
             for (auto& wall : walls) {
                 if (wall.active && SDL_HasIntersection(&bullet.rect, &wall.rect)) {
-                    wall.active = false;
-                    bullet.active = false;
+                    if (wall.type == WallType::BRICK) {
+                        wall.active = false;
+                        bullet.active = false;
+                    } else if (wall.type == WallType::STEEL) {
+                        bullet.active = false;
+                    }
                     break;
                 }
             }

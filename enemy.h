@@ -6,8 +6,11 @@
 #include "wall.h"
 #include "bullet.h"
 #include "animation.h"
+#include "wall.h"
 
 #include<algorithm>
+
+class PlayerTank;
 
 class EnemyTank {
 public:
@@ -32,7 +35,7 @@ public:
     // Move assignment operator
     EnemyTank& operator=(EnemyTank&& other) noexcept;
 
-    void move(const vector<Wall>& walls);
+    void move(const vector<Wall>& walls, const PlayerTank& player, const std::vector<EnemyTank>& enemies);
 
     void shoot();
     void updateBullets();

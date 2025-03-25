@@ -413,21 +413,23 @@
 	"begin_code.h"
 	"close_code.h"
 
-1742830204 c:\users\mac\onedrive\desktop\c++\gameproject\defs.h
+1742915982 c:\users\mac\onedrive\desktop\c++\gameproject\defs.h
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_ttf.h>
 	<iostream>
 	<vector>
 
-1742896745 source:c:\users\mac\onedrive\desktop\c++\gameproject\player.cpp
+1742915715 source:c:\users\mac\onedrive\desktop\c++\gameproject\player.cpp
 	"player.h"
+	"enemy.h"
 
-1742842674 c:\users\mac\onedrive\desktop\c++\gameproject\player.h
+1742914731 c:\users\mac\onedrive\desktop\c++\gameproject\player.h
 	"defs.h"
 	"wall.h"
 	"bullet.h"
 	"animation.h"
+	"wall.h"
 	<algorithm>
 
 1742443180 source:c:\users\mac\onedrive\desktop\c++\gameproject\shapes.cpp
@@ -458,40 +460,45 @@
 	<SDL.h>
 	"defs.h"
 
-1742840891 source:c:\users\mac\onedrive\desktop\c++\gameproject\wall.cpp
+1742913994 source:c:\users\mac\onedrive\desktop\c++\gameproject\wall.cpp
 	"wall.h"
 
-1742839570 c:\users\mac\onedrive\desktop\c++\gameproject\wall.h
+1742913715 c:\users\mac\onedrive\desktop\c++\gameproject\wall.h
 	<SDL.h>
 	"defs.h"
 
-1742708078 source:c:\users\mac\onedrive\desktop\c++\gameproject\bullet.cpp
+1742900888 source:c:\users\mac\onedrive\desktop\c++\gameproject\bullet.cpp
 	"bullet.h"
 
-1742707509 c:\users\mac\onedrive\desktop\c++\gameproject\bullet.h
+1742901085 c:\users\mac\onedrive\desktop\c++\gameproject\bullet.h
 	<SDL.h>
 	"defs.h"
+	"wall.h"
 
-1742897122 source:c:\users\mac\onedrive\desktop\c++\gameproject\enemy.cpp
+1742915714 source:c:\users\mac\onedrive\desktop\c++\gameproject\enemy.cpp
 	"enemy.h"
+	"player.h"
 
-1742895687 c:\users\mac\onedrive\desktop\c++\gameproject\enemy.h
+1742914731 c:\users\mac\onedrive\desktop\c++\gameproject\enemy.h
 	"defs.h"
 	"wall.h"
 	"bullet.h"
 	"animation.h"
+	"wall.h"
 	<algorithm>
 
-1742896996 source:c:\users\mac\onedrive\desktop\c++\gameproject\game.cpp
+1742915982 source:c:\users\mac\onedrive\desktop\c++\gameproject\game.cpp
 	"game.h"
 	"defs.h"
 
-1742897282 c:\users\mac\onedrive\desktop\c++\gameproject\game.h
+1742913295 c:\users\mac\onedrive\desktop\c++\gameproject\game.h
 	<SDL.h>
 	"defs.h"
 	"wall.h"
 	"player.h"
 	"enemy.h"
+	<cstdlib>
+	<fstream>
 
 1735807588 c:\users\mac\onedrive\desktop\sdl2_ttf-2.24.0\x86_64-w64-mingw32\include\sdl2\sdl_ttf.h
 	"SDL.h"

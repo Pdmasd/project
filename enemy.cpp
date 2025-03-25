@@ -1,5 +1,6 @@
 //enemy.cpp
 #include "enemy.h"
+#include "player.h"
 
 EnemyTank::EnemyTank(int startX, int startY, SDL_Texture* sharedTexture) {
     moveDelay = 15; // Delay for movement
@@ -98,9 +99,10 @@ void EnemyTank::render(SDL_Renderer* renderer) {
     }
 }
 
-void EnemyTank::move(const vector<Wall>& walls) {
+void EnemyTank::move(const vector<Wall>& walls, const PlayerTank& player, const std::vector<EnemyTank>& enemies) {
     if (--moveDelay > 0) return;
     moveDelay = 15;
+
     int r = rand() % 4;
     if (r == 0) { // Up
         this->dirX = 0;
@@ -119,13 +121,32 @@ void EnemyTank::move(const vector<Wall>& walls) {
         this->dirX = MOVE_SPEED;
     }
 
+    // Chọn animation theo hướng di chuyển
+    if (dirY < 0) currentAnim = &upAnim;    // Lên
+    else if (dirY > 0) currentAnim = &downAnim; // Xuống
+    else if (dirX < 0) currentAnim = &leftAnim; // Trái
+    else if (dirX > 0) currentAnim = &rightAnim; // Phải
+
     int newX = x + this->dirX;
     int newY = y + this->dirY;
 
     SDL_Rect newRect = { newX, newY, TILE_SIZE, TILE_SIZE };
+
     for (const auto& wall : walls) {
         if (wall.active && SDL_HasIntersection(&newRect, &wall.rect)) {
             return;
+        }
+    }
+
+    // Kiểm tra va chạm với Player
+    if (SDL_HasIntersection(&newRect, &player.rect)) {
+        return; // Không di chuyển nếu va chạm Player
+    }
+
+    // Kiểm tra va chạm với các enemy khác
+    for (const auto& enemy : enemies) {
+        if (&enemy != this && enemy.active && SDL_HasIntersection(&newRect, &enemy.rect)) {
+            return; // Không di chuyển nếu va chạm với enemy khác
         }
     }
 
@@ -136,13 +157,13 @@ void EnemyTank::move(const vector<Wall>& walls) {
         rect.x = x;
         rect.y = y;
     }
-
-    // Chọn animation theo hướng di chuyển
-    if (dirY < 0) currentAnim = &upAnim;    // Lên
-    else if (dirY > 0) currentAnim = &downAnim; // Xuống
-    else if (dirX < 0) currentAnim = &leftAnim; // Trái
-    else if (dirX > 0) currentAnim = &rightAnim; // Phải
-
+//    if (newX >= TILE_SIZE && newX <= PLAY_SPACE_WIDTH - TILE_SIZE * 2&&
+//        newY >= TILE_SIZE && newY <= PLAY_SPACE_HEIGHT - TILE_SIZE * 2) {
+//        x = newX;
+//        y = newY;
+//        rect.x = x;
+//        rect.y = y;
+//    }
 
     if (currentAnim) currentAnim->update();
 }

@@ -1,5 +1,6 @@
 //player.cpp
 #include "player.h"
+#include "enemy.h"
 
 PlayerTank::PlayerTank(int startX, int startY, SDL_Renderer* renderer) {
     x = startX;
@@ -66,8 +67,7 @@ void PlayerTank::render(SDL_Renderer* renderer) {
     }
 }
 
-void PlayerTank::move(int dx, int dy, const vector<Wall>& walls) {
-
+void PlayerTank::move(int dx, int dy, const vector<Wall>& walls, const vector<EnemyTank>& enemies) {
     this->dirX = dx;
     this->dirY = dy;
 
@@ -81,21 +81,34 @@ void PlayerTank::move(int dx, int dy, const vector<Wall>& walls) {
     int newY = y + dy;
 
     SDL_Rect newRect = { newX, newY, TILE_SIZE, TILE_SIZE };
-    bool collision = false;
     for (const auto& wall : walls) {
-        if (wall.active && SDL_HasIntersection(&newRect, &wall.rect)) {
-            collision = true;
-            break;
+        if (wall.active && SDL_HasIntersection(&newRect, &wall.rect) && wall.type != WallType::LEAF ) {
+            return;
         }
     }
 
-    if (!collision && newX >= TILE_SIZE && newX <= SCREEN_WIDTH - TILE_SIZE * 2 &&
+    // Kiểm tra va chạm với các enemy
+    for (const auto& enemy : enemies) {
+        if (enemy.active && SDL_HasIntersection(&newRect, &enemy.rect)) {
+            return; // Ngừng di chuyển nếu va chạm với enemy
+        }
+    }
+
+    if (newX >= TILE_SIZE && newX <= SCREEN_WIDTH - TILE_SIZE * 2 &&
         newY >= TILE_SIZE && newY <= SCREEN_HEIGHT - TILE_SIZE * 2) {
         x = newX;
         y = newY;
         rect.x = x;
         rect.y = y;
     }
+
+//    if (newX >= TILE_SIZE && newX <= PLAY_SPACE_WIDTH - TILE_SIZE * 2 &&
+//        newY >= TILE_SIZE && newY <= PLAY_SPACE_HEIGHT - TILE_SIZE * 2) {
+//        x = newX;
+//        y = newY;
+//        rect.x = x;
+//        rect.y = y;
+//    }
 
     // Cập nhật frame animation
 

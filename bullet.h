@@ -3,14 +3,9 @@
 #define BULLET_H
 
 #include <SDL.h>
-#include "defs.h"
 
-//enum BulletDirection {
-//    BULLET_UP,
-//    BULLET_DOWN,
-//    BULLET_LEFT,
-//    BULLET_RIGHT
-//};
+#include "defs.h"
+#include "wall.h"
 
 class Bullet {
 public:
@@ -22,6 +17,9 @@ public:
     Bullet (int startX, int startY, int dirX, int dirY);
     void move();
     void render(SDL_Renderer* renderer);
+
+    // Kiểm tra va chạm với Wall
+    bool checkCollision(const Wall& wall) const;
 };
 
 #endif

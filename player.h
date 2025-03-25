@@ -6,8 +6,11 @@
 #include "wall.h"
 #include "bullet.h"
 #include "animation.h"
+#include "wall.h"
 
 #include<algorithm>
+
+class EnemyTank;
 
 class PlayerTank {
 public:
@@ -24,7 +27,7 @@ public:
     Animation* currentAnim; // Animation hiện tại
     Animation upAnim, downAnim, leftAnim, rightAnim;
 
-    void move(int dx, int dy, const vector<Wall>& walls);
+    void move(int dx, int dy, const vector<Wall>& walls, const vector<EnemyTank>& enemies);
 
     void shoot();
     void updateBullets();
