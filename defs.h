@@ -1,13 +1,24 @@
+//def.h
 #ifndef DEFS_H
 #define DEFS_H
 
+#include<SDL.h>
+#include<SDL_image.h>
+#include<SDL_ttf.h>
+
+#include<iostream>
+#include<vector>
+
+using namespace std;
+
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
-const int BASE_MOVEMENT_SPEED = 10;
-inline const char * WINDOW_TITLE = "Game v0.0";
+const int TILE_SIZE = 40;
+const int MOVE_SPEED = 10;
 
-const float GRAVITY_ACCELERATION = 9.0;  // Gia tốc trọng trường (m/s^2)
-const float AIR_FRICTION         = 1.0;  // Hệ số cản không khí
-const float GROUND_FRICTION      = 1.0;  // Hệ số ma sát mặt đất
+const int MAP_WIDTH = SCREEN_WIDTH / TILE_SIZE;
+const int MAP_HEIGHT = SCREEN_HEIGHT / TILE_SIZE;
+
+inline const char * WINDOW_TITLE = "Game v0.0";
 
 #endif

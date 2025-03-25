@@ -1,0 +1,27 @@
+//bullet.h
+#ifndef BULLET_H
+#define BULLET_H
+
+#include <SDL.h>
+#include "defs.h"
+
+//enum BulletDirection {
+//    BULLET_UP,
+//    BULLET_DOWN,
+//    BULLET_LEFT,
+//    BULLET_RIGHT
+//};
+
+class Bullet {
+public:
+    int x, y;
+    int dx, dy;
+    SDL_Rect rect;
+    bool active;
+
+    Bullet (int startX, int startY, int dirX, int dirY);
+    void move();
+    void render(SDL_Renderer* renderer);
+};
+
+#endif

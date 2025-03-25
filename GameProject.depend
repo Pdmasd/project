@@ -2,18 +2,15 @@
 1584205420 source:c:\users\mac\onedrive\desktop\c++\ltncgame\gameproject\main.cpp
 	<iostream>
 
-1742399374 source:c:\users\mac\onedrive\desktop\c++\gameproject\main.cpp
-	<iostream>
-	<SDL.h>
-	<SDL_image.h>
-	"graphic.h"
+1742579196 source:c:\users\mac\onedrive\desktop\c++\gameproject\main.cpp
+	"game.h"
 	"defs.h"
-	"shapes.h"
 
-1741668202 source:c:\users\mac\onedrive\desktop\c++\gameproject\graphic.cpp
+1742838687 source:c:\users\mac\onedrive\desktop\c++\gameproject\graphic.cpp
 	"graphic.h"
+	<iostream>
 
-1742399563 c:\users\mac\onedrive\desktop\c++\gameproject\graphic.h
+1742838687 c:\users\mac\onedrive\desktop\c++\gameproject\graphic.h
 	<SDL.h>
 	<SDL_image.h>
 
@@ -416,16 +413,25 @@
 	"begin_code.h"
 	"close_code.h"
 
-1742399134 c:\users\mac\onedrive\desktop\c++\gameproject\defs.h
+1742830204 c:\users\mac\onedrive\desktop\c++\gameproject\defs.h
+	<SDL.h>
+	<SDL_image.h>
+	<SDL_ttf.h>
+	<iostream>
+	<vector>
 
-1741690714 source:c:\users\mac\onedrive\desktop\c++\gameproject\player.cpp
+1742896745 source:c:\users\mac\onedrive\desktop\c++\gameproject\player.cpp
 	"player.h"
 
-1741690714 c:\users\mac\onedrive\desktop\c++\gameproject\player.h
-	"graphic.h"
+1742842674 c:\users\mac\onedrive\desktop\c++\gameproject\player.h
+	"defs.h"
+	"wall.h"
+	"bullet.h"
+	"animation.h"
+	<algorithm>
 
-1742398299 source:c:\users\mac\onedrive\desktop\c++\gameproject\shapes.cpp
-	"Shapes.h"
+1742443180 source:c:\users\mac\onedrive\desktop\c++\gameproject\shapes.cpp
+	"shapes.h"
 	<cstdlib>
 
 1742394698 c:\users\mac\onedrive\desktop\c++\gameproject\shapes.hpp
@@ -435,13 +441,68 @@
 1742398204 source:c:\users\mac\onedrive\desktop\c++\gameproject\gameobject.cpp
 	"gameObject.h"
 
-1742397940 c:\users\mac\onedrive\desktop\c++\gameproject\gameobject.h
+1742400225 c:\users\mac\onedrive\desktop\c++\gameproject\gameobject.h
 	"shapes.h"
 
 1742399018 source:c:\users\mac\onedrive\desktop\c++\gameproject\fallingobject.cpp
 	"FallingObject.h"
 	"defs.h"
 
-1742398544 c:\users\mac\onedrive\desktop\c++\gameproject\fallingobject.h
+1742401804 c:\users\mac\onedrive\desktop\c++\gameproject\fallingobject.h
 	"gameObject.h"
+
+1742842435 source:c:\users\mac\onedrive\desktop\c++\gameproject\animation.cpp
+	"animation.h"
+
+1742842581 c:\users\mac\onedrive\desktop\c++\gameproject\animation.h
+	<SDL.h>
+	"defs.h"
+
+1742840891 source:c:\users\mac\onedrive\desktop\c++\gameproject\wall.cpp
+	"wall.h"
+
+1742839570 c:\users\mac\onedrive\desktop\c++\gameproject\wall.h
+	<SDL.h>
+	"defs.h"
+
+1742708078 source:c:\users\mac\onedrive\desktop\c++\gameproject\bullet.cpp
+	"bullet.h"
+
+1742707509 c:\users\mac\onedrive\desktop\c++\gameproject\bullet.h
+	<SDL.h>
+	"defs.h"
+
+1742897122 source:c:\users\mac\onedrive\desktop\c++\gameproject\enemy.cpp
+	"enemy.h"
+
+1742895687 c:\users\mac\onedrive\desktop\c++\gameproject\enemy.h
+	"defs.h"
+	"wall.h"
+	"bullet.h"
+	"animation.h"
+	<algorithm>
+
+1742896996 source:c:\users\mac\onedrive\desktop\c++\gameproject\game.cpp
+	"game.h"
+	"defs.h"
+
+1742897282 c:\users\mac\onedrive\desktop\c++\gameproject\game.h
+	<SDL.h>
+	"defs.h"
+	"wall.h"
+	"player.h"
+	"enemy.h"
+
+1735807588 c:\users\mac\onedrive\desktop\sdl2_ttf-2.24.0\x86_64-w64-mingw32\include\sdl2\sdl_ttf.h
+	"SDL.h"
+	"begin_code.h"
+	"close_code.h"
+
+1742831474 source:c:\users\mac\onedrive\desktop\c++\gameproject\game_screen.cpp
+	"game_screen.h"
+	"defs.h"
+
+1742830437 c:\users\mac\onedrive\desktop\c++\gameproject\game_screen.h
+	<SDL.h>
+	<SDL_ttf.h>
 
