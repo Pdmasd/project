@@ -19,6 +19,8 @@ public:
     SDL_Rect rect;
     vector<Bullet> bullets;
 
+    bool was_moved = false;
+
     PlayerTank(int startX, int startY, SDL_Renderer* renderer);
     ~PlayerTank();
 
@@ -27,7 +29,7 @@ public:
     Animation* currentAnim; // Animation hiện tại
     Animation upAnim, downAnim, leftAnim, rightAnim;
 
-    void move(int dx, int dy, const vector<Wall>& walls, const vector<EnemyTank>& enemies);
+    void move(int dx, int dy, const vector<Wall*>& walls, const vector<EnemyTank*>& enemies);
 
     void shoot();
     void updateBullets();

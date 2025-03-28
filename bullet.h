@@ -14,6 +14,8 @@ public:
     SDL_Rect rect;
     bool active;
 
+    bool was_moved = false;
+
     Bullet (int startX, int startY, int dirX, int dirY);
     void move();
     void render(SDL_Renderer* renderer);

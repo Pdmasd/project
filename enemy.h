@@ -35,8 +35,6 @@ public:
     // Move assignment operator
     EnemyTank& operator=(EnemyTank&& other) noexcept;
 
-    void move(const vector<Wall>& walls, const PlayerTank& player, const std::vector<EnemyTank>& enemies);
-
     void shoot();
     void updateBullets();
     void render(SDL_Renderer* renderer);

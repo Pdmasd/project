@@ -24,16 +24,17 @@ public:
     Wall(int startX, int startY, SDL_Renderer* renderer, const char* texturePath, WallType type);
     ~Wall();
 
-    // Hiển thị khối
-    void render(SDL_Renderer* renderer);
 
-    // Kiểm tra trạng thái hoạt động
+    void render(SDL_Renderer* renderer);
     bool isActive() const;
 
     WallType getType() const { return type; }
 
     Wall(Wall&& other) noexcept;
     Wall& operator=(Wall&& other) noexcept;
+
+    static std::vector<Wall*> createBrickGroup(int startX, int startY, SDL_Renderer* renderer, const char* texturePath);
+    void hit();
 };
 
 #endif

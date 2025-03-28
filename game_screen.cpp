@@ -1,16 +1,67 @@
 // game_screen.cpp
+
 #include "game_screen.h"
-#include "defs.h"
 
-GameScreen::GameScreen(SDL_Renderer* renderer) : renderer(renderer) {}
+GameScreen::GameScreen(SDL_Renderer* renderer) : renderer(renderer) {
+    if (TTF_Init() == -1) {
+        std::cerr << "Không thể khởi tạo SDL_ttf: " << TTF_GetError() << std::endl;
+    }
+    font = TTF_OpenFont("image/arial.ttf", 48);
+    if (!font) {
+        std::cerr << "Không thể tải font: " << TTF_GetError() << std::endl;
+    }
+}
 
-void GameScreen::showStartScreen(bool& running) {
+GameScreen::~GameScreen() {
+    if (font) TTF_CloseFont(font);
+    TTF_Quit();
+}
+
+// Vẽ văn bản lên màn hình
+void GameScreen::renderText(const std::string& text, int x, int y, SDL_Color color) {
+    SDL_Surface* surface = TTF_RenderText_Solid(font, text.c_str(), color);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+    SDL_Rect dstRect = {x, y, surface->w, surface->h};
+    SDL_RenderCopy(renderer, texture, nullptr, &dstRect);
+
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
+}
+
+// Hiển thị màn hình chờ
+void GameScreen::showMainMenu(bool& running) {
+    bool inMenu = true;
+    SDL_Event event;
+
+    while (inMenu && running) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                running = false;
+                inMenu = false;
+            }
+            if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN) {
+                inMenu = false;  // Bắt đầu trò chơi khi nhấn Enter
+            }
+        }
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+
+        renderText("TANK BATTLE", 220, 200, {255, 255, 255, 255});
+        renderText("Press ENTER to Start", 150, 350, {255, 255, 255, 255});
+
+        SDL_RenderPresent(renderer);
+    }
+}
+
+// Hiển thị màn hình Game Over hoặc You Win
+void GameScreen::showGameOver(SDL_Renderer* renderer, const std::string& message) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    SDL_Color white = {255, 255, 255, 255};
-    renderText("BATTLE CITY", SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 3, white);
-    renderText("Press ENTER to Start", SCREEN_WIDTH / 2 - 200, SCREEN_HEIGHT / 2, white);
+    renderText(message, 300, 300, {255, 0, 0, 255});
+    renderText("Press ESC to Exit", 250, 400, {255, 255, 255, 255});
 
     SDL_RenderPresent(renderer);
 
@@ -19,59 +70,11 @@ void GameScreen::showStartScreen(bool& running) {
     while (waiting) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
-                running = false;
-                return;
-            } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN) {
+                waiting = false;
+            }
+            if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
                 waiting = false;
             }
         }
     }
-}
-
-void GameScreen::showEndScreen(bool playerWon) {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
-
-    SDL_Color red = {255, 0, 0, 255};
-    SDL_Color green = {0, 255, 0, 255};
-
-    if (playerWon) {
-        renderText("YOU WIN!", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2, green);
-    } else {
-        renderText("GAME OVER", SCREEN_WIDTH / 2 - 120, SCREEN_HEIGHT / 2, red);
-    }
-
-    SDL_RenderPresent(renderer);
-
-    SDL_Delay(3000); // Hiện màn hình trong 3 giây trước khi thoát
-}
-
-void GameScreen::renderText(const char* message, int x, int y, SDL_Color color) {
-    TTF_Font* font = TTF_OpenFont("ARIAL.TTF", 36);
-    if (!font) {
-        SDL_Log("Failed to load font: %s", TTF_GetError());
-        return;
-    }
-
-    SDL_Surface* surface = TTF_RenderText_Solid(font, message, color);
-    if (!surface) {
-        SDL_Log("Failed to create surface: %s", TTF_GetError());
-        TTF_CloseFont(font);
-        return;
-    }
-
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-    if (!texture) {
-        SDL_Log("Failed to create texture: %s", SDL_GetError());
-        SDL_FreeSurface(surface);
-        TTF_CloseFont(font);
-        return;
-    }
-
-    SDL_Rect textRect = {x, y, surface->w, surface->h};
-    SDL_RenderCopy(renderer, texture, nullptr, &textRect);
-
-    SDL_FreeSurface(surface);
-    SDL_DestroyTexture(texture);
-    TTF_CloseFont(font);
 }

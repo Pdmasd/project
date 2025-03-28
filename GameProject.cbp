@@ -30,6 +30,7 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-std=gnu++17" />
 			<Add option="-fexceptions" />
 			<Add directory="../../SDL2-devel-2.28.5-mingw/SDL2-2.28.5/x86_64-w64-mingw32/include/SDL2" />
 			<Add directory="../../SDL2_image-2.8.5/x86_64-w64-mingw32/include/SDL2" />
@@ -44,13 +45,19 @@
 			<Add directory="../../SDL2_ttf-2.24.0/x86_64-w64-mingw32/lib" />
 			<Add directory="../../SDL2_mixer-2.8.1/x86_64-w64-mingw32/lib" />
 		</Linker>
+		<Unit filename="AIController.cpp" />
+		<Unit filename="AIController.h" />
 		<Unit filename="animation.cpp" />
 		<Unit filename="animation.h" />
+		<Unit filename="base.cpp" />
+		<Unit filename="base.h" />
 		<Unit filename="bullet.cpp" />
 		<Unit filename="bullet.h" />
 		<Unit filename="defs.h" />
 		<Unit filename="enemy.cpp" />
 		<Unit filename="enemy.h" />
+		<Unit filename="enemySpawner.cpp" />
+		<Unit filename="enemySpawner.h" />
 		<Unit filename="game.cpp" />
 		<Unit filename="game.h" />
 		<Unit filename="game_screen.cpp" />
@@ -58,6 +65,8 @@
 		<Unit filename="main.cpp" />
 		<Unit filename="player.cpp" />
 		<Unit filename="player.h" />
+		<Unit filename="tick.cpp" />
+		<Unit filename="tick.h" />
 		<Unit filename="wall.cpp" />
 		<Unit filename="wall.h" />
 		<Extensions>

@@ -2,7 +2,7 @@
 1584205420 source:c:\users\mac\onedrive\desktop\c++\ltncgame\gameproject\main.cpp
 	<iostream>
 
-1742579196 source:c:\users\mac\onedrive\desktop\c++\gameproject\main.cpp
+1742919414 source:c:\users\mac\onedrive\desktop\c++\gameproject\main.cpp
 	"game.h"
 	"defs.h"
 
@@ -413,18 +413,18 @@
 	"begin_code.h"
 	"close_code.h"
 
-1742915982 c:\users\mac\onedrive\desktop\c++\gameproject\defs.h
+1743098141 c:\users\mac\onedrive\desktop\c++\gameproject\defs.h
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_ttf.h>
 	<iostream>
 	<vector>
 
-1742915715 source:c:\users\mac\onedrive\desktop\c++\gameproject\player.cpp
+1743100471 source:c:\users\mac\onedrive\desktop\c++\gameproject\player.cpp
 	"player.h"
 	"enemy.h"
 
-1742914731 c:\users\mac\onedrive\desktop\c++\gameproject\player.h
+1743100164 c:\users\mac\onedrive\desktop\c++\gameproject\player.h
 	"defs.h"
 	"wall.h"
 	"bullet.h"
@@ -453,33 +453,33 @@
 1742401804 c:\users\mac\onedrive\desktop\c++\gameproject\fallingobject.h
 	"gameObject.h"
 
-1742842435 source:c:\users\mac\onedrive\desktop\c++\gameproject\animation.cpp
+1742923672 source:c:\users\mac\onedrive\desktop\c++\gameproject\animation.cpp
 	"animation.h"
 
 1742842581 c:\users\mac\onedrive\desktop\c++\gameproject\animation.h
 	<SDL.h>
 	"defs.h"
 
-1742913994 source:c:\users\mac\onedrive\desktop\c++\gameproject\wall.cpp
+1743099699 source:c:\users\mac\onedrive\desktop\c++\gameproject\wall.cpp
 	"wall.h"
 
-1742913715 c:\users\mac\onedrive\desktop\c++\gameproject\wall.h
+1743099699 c:\users\mac\onedrive\desktop\c++\gameproject\wall.h
 	<SDL.h>
 	"defs.h"
 
-1742900888 source:c:\users\mac\onedrive\desktop\c++\gameproject\bullet.cpp
+1742976572 source:c:\users\mac\onedrive\desktop\c++\gameproject\bullet.cpp
 	"bullet.h"
 
-1742901085 c:\users\mac\onedrive\desktop\c++\gameproject\bullet.h
+1742919785 c:\users\mac\onedrive\desktop\c++\gameproject\bullet.h
 	<SDL.h>
 	"defs.h"
 	"wall.h"
 
-1742915714 source:c:\users\mac\onedrive\desktop\c++\gameproject\enemy.cpp
+1743092892 source:c:\users\mac\onedrive\desktop\c++\gameproject\enemy.cpp
 	"enemy.h"
 	"player.h"
 
-1742914731 c:\users\mac\onedrive\desktop\c++\gameproject\enemy.h
+1743092892 c:\users\mac\onedrive\desktop\c++\gameproject\enemy.h
 	"defs.h"
 	"wall.h"
 	"bullet.h"
@@ -487,16 +487,20 @@
 	"wall.h"
 	<algorithm>
 
-1742915982 source:c:\users\mac\onedrive\desktop\c++\gameproject\game.cpp
+1743101442 source:c:\users\mac\onedrive\desktop\c++\gameproject\game.cpp
 	"game.h"
 	"defs.h"
 
-1742913295 c:\users\mac\onedrive\desktop\c++\gameproject\game.h
+1743099963 c:\users\mac\onedrive\desktop\c++\gameproject\game.h
 	<SDL.h>
 	"defs.h"
 	"wall.h"
 	"player.h"
 	"enemy.h"
+	"base.h"
+	"game_screen.h"
+	"enemySpawner.h"
+	"AIController.h"
 	<cstdlib>
 	<fstream>
 
@@ -505,11 +509,44 @@
 	"begin_code.h"
 	"close_code.h"
 
-1742831474 source:c:\users\mac\onedrive\desktop\c++\gameproject\game_screen.cpp
+1742925022 source:c:\users\mac\onedrive\desktop\c++\gameproject\game_screen.cpp
 	"game_screen.h"
+
+1742921460 c:\users\mac\onedrive\desktop\c++\gameproject\game_screen.h
 	"defs.h"
 
-1742830437 c:\users\mac\onedrive\desktop\c++\gameproject\game_screen.h
-	<SDL.h>
-	<SDL_ttf.h>
+1742917302 c:\users\mac\onedrive\desktop\c++\gameproject\base.h
+	"defs.h"
+
+1742917262 source:c:\users\mac\onedrive\desktop\c++\gameproject\base.cpp
+	"base.h"
+
+1742978161 source:c:\users\mac\onedrive\desktop\c++\gameproject\tick.cpp
+	"tick.h"
+
+1742978334 c:\users\mac\onedrive\desktop\c++\gameproject\tick.h
+	<vector>
+	<algorithm>
+
+1743100286 source:c:\users\mac\onedrive\desktop\c++\gameproject\enemyspawner.cpp
+	"EnemySpawner.h"
+	"AIController.h"
+	<cstdlib>
+
+1743100315 c:\users\mac\onedrive\desktop\c++\gameproject\enemyspawner.h
+	"player.h"
+	"Enemy.h"
+	"AIController.h"
+	"Wall.h"
+	"defs.h"
+
+1743100452 source:c:\users\mac\onedrive\desktop\c++\gameproject\aicontroller.cpp
+	"AIController.h"
+	<cstdlib>
+
+1743100429 c:\users\mac\onedrive\desktop\c++\gameproject\aicontroller.h
+	"player.h"
+	"Enemy.h"
+	"Wall.h"
+	"defs.h"
 

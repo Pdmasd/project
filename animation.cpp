@@ -3,11 +3,9 @@
 
 Animation::Animation() : texture(nullptr), currentFrame(0), lastFrameTime(0), frameDelay(100) {}
 
-// Khởi tạo Animation
 Animation::Animation(SDL_Texture* texture, int frameWidth, int frameHeight, int frameDelay)
     : texture(texture), currentFrame(0), lastFrameTime(0), frameDelay(frameDelay) {}
 
-// Hủy đối tượng, không giải phóng texture (do quản lý ở ngoài)
 Animation::~Animation() {}
 
 // Thêm frame từ sprite sheet
@@ -38,7 +36,6 @@ void Animation::render(SDL_Renderer* renderer, int x, int y) {
     }
 }
 
-// Reset frame
 void Animation::reset() {
     currentFrame = 0;
     lastFrameTime = SDL_GetTicks();

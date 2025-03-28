@@ -2,18 +2,21 @@
 #ifndef GAME_SCREEN_H
 #define GAME_SCREEN_H
 
-#include <SDL.h>
-#include <SDL_ttf.h>
+#include "defs.h"
 
 class GameScreen {
 public:
     GameScreen(SDL_Renderer* renderer);
-    void showStartScreen(bool& running);
-    void showEndScreen(bool playerWon);
+     ~GameScreen();
+
+    void showMainMenu(bool& running);
+    void showGameOver(SDL_Renderer* renderer, const std::string& message);
 
 private:
     SDL_Renderer* renderer;
-    void renderText(const char* message, int x, int y, SDL_Color color);
+    TTF_Font* font;
+
+    void renderText(const std::string& text, int x, int y, SDL_Color color);
 };
 
 #endif // GAME_SCREEN_H

@@ -42,9 +42,7 @@ PlayerTank::PlayerTank(int startX, int startY, SDL_Renderer* renderer) {
     currentAnim = &upAnim;
 }
 
-PlayerTank::~PlayerTank() {
-    // Không cần giải phóng animation vì SDL_Texture* sẽ do lớp Animation xử lý.
-}
+PlayerTank::~PlayerTank() {}
 
 void PlayerTank::shoot() {
     bullets.push_back(Bullet(x + TILE_SIZE / 2 - 5, y + TILE_SIZE / 2 - 5,
@@ -60,6 +58,10 @@ void PlayerTank::updateBullets() {
 }
 
 void PlayerTank::render(SDL_Renderer* renderer) {
+    if(!was_moved){
+        currentAnim = &upAnim;
+        was_moved = true;
+    }
     currentAnim->render(renderer, x, y);
 
     for (auto &bullet : bullets) {
@@ -67,7 +69,7 @@ void PlayerTank::render(SDL_Renderer* renderer) {
     }
 }
 
-void PlayerTank::move(int dx, int dy, const vector<Wall>& walls, const vector<EnemyTank>& enemies) {
+void PlayerTank::move(int dx, int dy, const vector<Wall*>& walls, const vector<EnemyTank*>& enemies) {
     this->dirX = dx;
     this->dirY = dy;
 
@@ -80,16 +82,16 @@ void PlayerTank::move(int dx, int dy, const vector<Wall>& walls, const vector<En
     int newX = x + dx;
     int newY = y + dy;
 
-    SDL_Rect newRect = { newX, newY, TILE_SIZE, TILE_SIZE };
+    SDL_Rect newRect = { newX, newY, HIT_BOX, HIT_BOX};
     for (const auto& wall : walls) {
-        if (wall.active && SDL_HasIntersection(&newRect, &wall.rect) && wall.type != WallType::LEAF ) {
+        if (wall->active && SDL_HasIntersection(&newRect, &wall->rect) && wall->type != WallType::LEAF ) {
             return;
         }
     }
 
     // Kiểm tra va chạm với các enemy
     for (const auto& enemy : enemies) {
-        if (enemy.active && SDL_HasIntersection(&newRect, &enemy.rect)) {
+        if (enemy->active && SDL_HasIntersection(&newRect, &enemy->rect)) {
             return; // Ngừng di chuyển nếu va chạm với enemy
         }
     }
@@ -101,16 +103,6 @@ void PlayerTank::move(int dx, int dy, const vector<Wall>& walls, const vector<En
         rect.x = x;
         rect.y = y;
     }
-
-//    if (newX >= TILE_SIZE && newX <= PLAY_SPACE_WIDTH - TILE_SIZE * 2 &&
-//        newY >= TILE_SIZE && newY <= PLAY_SPACE_HEIGHT - TILE_SIZE * 2) {
-//        x = newX;
-//        y = newY;
-//        rect.x = x;
-//        rect.y = y;
-//    }
-
-    // Cập nhật frame animation
 
     if (currentAnim) {
         currentAnim->update();
