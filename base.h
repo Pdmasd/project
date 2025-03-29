@@ -6,10 +6,10 @@
 
 class Base {
 public:
-    int x, y;                 // Vị trí nhà chính
-    SDL_Rect rect;            // Kích thước và vị trí
-    SDL_Texture* texture;     // Hình ảnh nhà chính
-    bool destroyed;          // Trạng thái nhà chính (bị phá hủy hay chưa)
+    int x, y;
+    SDL_Rect rect;
+    SDL_Texture* texture;
+    bool destroyed;
 
     Base(int startX, int startY, SDL_Renderer* renderer, const char* texturePath);
     ~Base();

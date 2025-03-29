@@ -29,10 +29,8 @@ public:
     Animation* currentAnim; // Animation hiện tại
     Animation upAnim, downAnim, leftAnim, rightAnim;
 
-    // Move constructor
     EnemyTank(EnemyTank&& other) noexcept;
 
-    // Move assignment operator
     EnemyTank& operator=(EnemyTank&& other) noexcept;
 
     void shoot();

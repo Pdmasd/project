@@ -7,8 +7,26 @@ using namespace std;
 SDL_Texture* enemyTexture = nullptr;
 EnemySpawner* enemySpawner = nullptr;
 
+///Làm trong suốt phần màu (gần) đen trong sheet
+SDL_Texture* loadTransparentSprite(const std::string& path, SDL_Renderer* renderer) {
+    SDL_Surface* surface = IMG_Load(path.c_str());
+    if (!surface) {
+        std::cerr << "Lỗi khi load sheet.png: " << IMG_GetError() << std::endl;
+        return nullptr;
+    }
+
+    SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 0, 1));
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+
+    return texture;
+}
+
 Game::Game(): player(100, 100, nullptr){
     running = true;
+    pause = false;
+
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
         running = false;
@@ -25,16 +43,16 @@ Game::Game(): player(100, 100, nullptr){
         cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
         running = false;
     }
+    ///Khởi tạo SDL_mixer
+    SoundManager::init();
 
     /// Hiển thị màn hình chờ
-//    GameScreen screen(renderer);
-//    screen.showMainMenu(running);
+    GameScreen screen(renderer);
+    screen.showMainMenu(renderer, running);
+    screen.showStageIntro(renderer, 1);
 
     /// Tải texture chung cho enemy
-    enemyTexture = IMG_LoadTexture(renderer, "image/sheet.png");
-//    enemySpawner = EnemySpawner::GetInstance(enemyTexture);
-
-//    enemySpawner->StartSpawning(1);
+    enemyTexture = loadTransparentSprite("image/sheet.png", renderer);
 
     if (!enemyTexture) {
         cerr << "Lỗi: Không thể load enemy texture: " << IMG_GetError() << endl;
@@ -46,7 +64,7 @@ Game::Game(): player(100, 100, nullptr){
     player = PlayerTank(((MAP_WIDTH) / 2) * TILE_SIZE, (MAP_HEIGHT - 4) * TILE_SIZE, renderer);
 
     enemySpawner = new EnemySpawner(enemyTexture, enemies, aiControllers, &walls, player.x, player.y, base->x, base->y, &player);
-    enemySpawner->spawnEnemies(10, 3000);
+    enemySpawner->spawnEnemies(10, 4000);
 }
 
 Game::~Game() {
@@ -128,12 +146,27 @@ void Game::generateWalls() {
 void Game::handleEvents() {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT) {
+        if (event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE) {
             running = false;
+        }
+        else if (event.type == SDL_KEYDOWN) {
+            if (event.key.keysym.sym == SDLK_p) {
+                if(pause)
+                    pause = false;
+                else if(!pause)
+                    pause = true;
+            }
         }
     }
 
-    // Lấy trạng thái phím hiện tại
+    if(pause){
+        GameScreen screen(renderer);
+        screen.showPauseGame(renderer);
+        SDL_RenderPresent(renderer);
+        return;
+    }
+
+    /// Lấy trạng thái phím hiện tại
     const Uint8* keyState = SDL_GetKeyboardState(nullptr);
 
     int dx = 0, dy = 0;
@@ -147,7 +180,7 @@ void Game::handleEvents() {
         dx = MOVE_SPEED;
     }
 
-    // Cập nhật vị trí nếu có di chuyển
+    /// Cập nhật vị trí nếu có di chuyển
     if (dx != 0 || dy != 0) {
         player.move(dx, dy, walls, enemies);
     }
@@ -162,43 +195,53 @@ void Game::handleEvents() {
 }
 
 void Game::update() {
-    player.updateBullets();
+    player.updateStatus();
 
-    ///Đạn player bắn tường
+    Uint32 currentTime = SDL_GetTicks();
+    static Uint32 lastTime = currentTime; /// Khởi tạo lastTime tĩnh
+    Uint32 deltaTime = currentTime - lastTime;
+    lastTime = currentTime;
+
+    ///Đạn player bắn trúng tường
     for (auto& bullet : player.bullets) {
         for (auto& wall : walls) {
             if (wall->active && SDL_HasIntersection(&bullet.rect, &wall->rect)) {
                 if (wall->type == WallType::BRICK) {
-                    // Phá hủy brick bị trúng
                     wall->hit();
                     bullet.active = false;
+
+                    Explosion* exp = new Explosion(enemyTexture, wall->rect.x, wall->rect.y, 2);
+                    explosionList.push_back(exp);
+
+                    SoundManager::loadSound("explosion", "sound/explosion.wav");
+                    SoundManager::playSound("explosion", 0);
 
                     int groupBaseX = (wall->x / TILE_SIZE) * TILE_SIZE;
                     int groupBaseY = (wall->y / TILE_SIZE) * TILE_SIZE;
                     int smallSize = TILE_SIZE / 4;
-                    // Xác định vị trí (hàng, cột) của brick bị trúng trong nhóm (lưới 4x4)
+
+                    /// Xác định vị trí của brick bị trúng
                     int hitRow = (wall->y - groupBaseY) / smallSize;
                     int hitCol = (wall->x - groupBaseX) / smallSize;
 
-                    // Nếu đạn được bắn theo chiều dọc (dirX == 0 và dirY != 0)
-                    // thì hiệu ứng splash sẽ phá hủy các brick lân cận theo chiều ngang (cùng hàng)
+                    /// Nếu đạn được bắn theo chiều dọc
                     if (bullet.dx == 0 && bullet.dy != 0) {
                         for (auto &otherBrick : walls) {
                             if (!otherBrick->active)
                                 continue;
-                            // Kiểm tra brick này có thuộc nhóm (ô chứa 16 brick nhỏ) không
+
                             if (otherBrick->x >= groupBaseX && otherBrick->x < groupBaseX + TILE_SIZE &&
                                 otherBrick->y >= groupBaseY && otherBrick->y < groupBaseY + TILE_SIZE) {
                                 int row = (otherBrick->y - groupBaseY) / smallSize;
                                 int col = (otherBrick->x - groupBaseX) / smallSize;
-                                // Nếu cùng hàng với brick bị trúng và khoảng cách cột không quá 2 ô
+
                                 if (row == hitRow && abs(col - hitCol) <= 2) {
                                     otherBrick->hit();
                                 }
                             }
                         }
                     }
-                    // Nếu đạn bắn theo chiều ngang, bạn có thể xử lý splash theo chiều dọc (nếu cần)
+                    /// Nếu đạn bắn theo chiều ngang
                     else if (bullet.dy == 0 && bullet.dx != 0) {
                         for (auto &otherBrick : walls) {
                             if (!otherBrick->active)
@@ -207,7 +250,7 @@ void Game::update() {
                                 otherBrick->y >= groupBaseY && otherBrick->y < groupBaseY + TILE_SIZE) {
                                 int row = (otherBrick->y - groupBaseY) / smallSize;
                                 int col = (otherBrick->x - groupBaseX) / smallSize;
-                                // Nếu cùng cột với brick bị trúng và khoảng cách hàng không quá 2 ô
+
                                 if (col == hitCol && abs(row - hitRow) <= 2) {
                                     otherBrick->hit();
                                 }
@@ -221,12 +264,21 @@ void Game::update() {
             }
         }
     }
-    ///Đạn bắn enemy
+
+    ///Đạn player bắn trúng enemy
     for (auto& bullet : player.bullets) {
         for (auto& enemy : enemies) {
             if (enemy->active && SDL_HasIntersection(&bullet.rect, &enemy->rect)) {
                 enemy->active = false;
                 bullet.active = false;
+
+                score.addPoints(100);
+
+                Explosion* exp = new Explosion(enemyTexture, enemy->rect.x, enemy->rect.y, 1);
+                explosionList.push_back(exp);
+
+                SoundManager::loadSound("explosion", "sound/explosion.wav");
+                SoundManager::playSound("explosion", 0);
             }
         }
     }
@@ -238,42 +290,45 @@ void Game::update() {
         ai->Update();
     }
 
-
+    ///Đạn enemy bắn trúng tường
     for (auto& enemy : enemies) {
         for (auto& bullet : enemy->bullets) {
             for (auto& wall : walls) {
                 if (wall->active && SDL_HasIntersection(&bullet.rect, &wall->rect)) {
                     if (wall->type == WallType::BRICK) {
-                        // Phá hủy brick bị trúng
                         wall->hit();
                         bullet.active = false;
+
+                        Explosion* exp = new Explosion(enemyTexture, wall->rect.x, wall->rect.y, 2);
+                        explosionList.push_back(exp);
+
+                        SoundManager::loadSound("explosion", "sound/explosion.wav");
+                        SoundManager::playSound("explosion", 0);
 
                         int groupBaseX = (wall->x / TILE_SIZE) * TILE_SIZE;
                         int groupBaseY = (wall->y / TILE_SIZE) * TILE_SIZE;
                         int smallSize = TILE_SIZE / 4;
-                        // Xác định vị trí (hàng, cột) của brick bị trúng trong nhóm (lưới 4x4)
+
                         int hitRow = (wall->y - groupBaseY) / smallSize;
                         int hitCol = (wall->x - groupBaseX) / smallSize;
 
-                        // Nếu đạn được bắn theo chiều dọc (dirX == 0 và dirY != 0)
-                        // thì hiệu ứng splash sẽ phá hủy các brick lân cận theo chiều ngang (cùng hàng)
                         if (bullet.dx == 0 && bullet.dy != 0) {
                             for (auto &otherBrick : walls) {
                                 if (!otherBrick->active)
                                     continue;
-                                // Kiểm tra brick này có thuộc nhóm (ô chứa 16 brick nhỏ) không
+
                                 if (otherBrick->x >= groupBaseX && otherBrick->x < groupBaseX + TILE_SIZE &&
                                     otherBrick->y >= groupBaseY && otherBrick->y < groupBaseY + TILE_SIZE) {
                                     int row = (otherBrick->y - groupBaseY) / smallSize;
                                     int col = (otherBrick->x - groupBaseX) / smallSize;
-                                    // Nếu cùng hàng với brick bị trúng và khoảng cách cột không quá 2 ô
+
                                     if (row == hitRow && abs(col - hitCol) <= 2) {
                                         otherBrick->hit();
                                     }
                                 }
                             }
                         }
-                        // Nếu đạn bắn theo chiều ngang, bạn có thể xử lý splash theo chiều dọc (nếu cần)
+
                         else if (bullet.dy == 0 && bullet.dx != 0) {
                             for (auto &otherBrick : walls) {
                                 if (!otherBrick->active)
@@ -282,7 +337,7 @@ void Game::update() {
                                     otherBrick->y >= groupBaseY && otherBrick->y < groupBaseY + TILE_SIZE) {
                                     int row = (otherBrick->y - groupBaseY) / smallSize;
                                     int col = (otherBrick->x - groupBaseX) / smallSize;
-                                    // Nếu cùng cột với brick bị trúng và khoảng cách hàng không quá 2 ô
+
                                     if (col == hitCol && abs(row - hitRow) <= 2) {
                                         otherBrick->hit();
                                     }
@@ -301,15 +356,36 @@ void Game::update() {
     enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
                         [](EnemyTank* e) { return !e->active; }), enemies.end());
 
-//    if (spawnedEnemies == enemyNumber && enemies.empty()) {
-//        game_over = true; // WIN khi tất cả kẻ địch bị tiêu diệt
-//    }
 
+    ///Đạn enemy bắn trúng player
     for (auto& enemy : enemies) {
         for (auto& bullet : enemy->bullets) {
             if (SDL_HasIntersection(&bullet.rect, &player.rect)) {
-                running = false;
-                return;
+                bullet.active = false;
+                player.die();
+
+                Explosion* exp = new Explosion(enemyTexture, player.x, player.y, 0);
+                explosionList.push_back(exp);
+
+                SoundManager::loadSound("explosion", "sound/explosion.wav");
+                SoundManager::playSound("explosion", 0);
+
+                if (!player.alive && player.lives == 0) {
+                    game_over = true;
+                    return;
+                }
+            }
+        }
+    }
+
+    ///Đạn player trúng đạn enemy
+    for(auto& p_bullet : player.bullets){
+        for (auto& enemy : enemies) {
+            for (auto& e_bullet : enemy->bullets) {
+                if (SDL_HasIntersection(&p_bullet.rect, &e_bullet.rect)){
+                    p_bullet.active = false;
+                    e_bullet.active = false;
+                }
             }
         }
     }
@@ -318,8 +394,7 @@ void Game::update() {
     for (auto& enemy : enemies) {
         for (auto& bullet : enemy->bullets) {
             if (bullet.active && SDL_HasIntersection(&bullet.rect, &base->rect)) {
-                SDL_Log("Nhà chính bị phá hủy!");
-                base->destroy();  // Đánh dấu nhà chính bị phá hủy
+                base->destroy();
                 game_over = true;
                 return;
             }
@@ -327,10 +402,20 @@ void Game::update() {
     }
     for (auto& bullet : player.bullets) {
         if (bullet.active && SDL_HasIntersection(&bullet.rect, &base->rect)) {
-            SDL_Log("Nhà chính bị phá hủy!");
-            base->destroy();  // Đánh dấu nhà chính bị phá hủy
+            base->destroy();
             game_over = true;
             return;
+        }
+    }
+
+    ///Update Explosion
+    for (auto it = explosionList.begin(); it != explosionList.end(); ) {
+        (*it)->update(deltaTime);
+        if ((*it)->isFinished()) {
+            delete *it;
+            it = explosionList.erase(it);
+        } else {
+            ++it;
         }
     }
 }
@@ -359,24 +444,80 @@ void Game::render() {
         wall->render(renderer);
     }
 
+    for (Explosion* exp : explosionList) {
+        exp->render(renderer);
+    }
+    GameScreen screen(renderer);
+    screen.figures(player.lives, score.getScore());
+
     SDL_RenderPresent(renderer);
 }
 
 void Game::run() {
-
     while (running) {
-        handleEvents();
-        update();
-        render();
+            handleEvents();
+
+        if(!pause){
+            update();
+            render();
+        }
 
         if (game_over) {
-            running = false; // Dừng game khi game_over = true
+            GameScreen screen(renderer);
+            bool backToMenu = false;
+            screen.showGameOver(renderer, score.getScore(), backToMenu);
+
+            if (backToMenu) {
+                resetGame();
+                screen.showMainMenu(renderer, running);
+            } else {
+                running = false;
+            }
         }
 
         SDL_Delay(16);
     }
 }
 
+void Game::resetGame() {
+    for (auto enemy : enemies) {
+        delete enemy;
+    }
+    enemies.clear();
 
+    for (auto ai : aiControllers) {
+        delete ai;
+    }
+    aiControllers.clear();
+
+    for (auto exp : explosionList) {
+        delete exp;
+    }
+    explosionList.clear();
+
+    for (auto wall : walls) {
+        delete wall;
+    }
+    walls.clear();
+    generateWalls();
+
+    player = PlayerTank(((MAP_WIDTH) / 2) * TILE_SIZE, (MAP_HEIGHT - 4) * TILE_SIZE, renderer);
+
+    if (base != nullptr) {
+        delete base;
+    }
+    base = new Base((MAP_WIDTH / 2) * TILE_SIZE, (MAP_HEIGHT - 2) * TILE_SIZE, renderer, "image/base.png");
+
+    if (enemySpawner != nullptr) {
+        delete enemySpawner;
+    }
+    enemySpawner = new EnemySpawner(enemyTexture, enemies, aiControllers, &walls, player.x, player.y, base->x, base->y, &player);
+    enemySpawner->spawnEnemies(10, 4000);
+
+    game_over = false;
+    pause = false;
+
+    score.reset();
+}
 
 

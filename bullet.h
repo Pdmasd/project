@@ -20,7 +20,7 @@ public:
     void move();
     void render(SDL_Renderer* renderer);
 
-    // Kiểm tra va chạm với Wall
+    /// Kiểm tra va chạm với Wall
     bool checkCollision(const Wall& wall) const;
 };
 

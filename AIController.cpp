@@ -1,5 +1,5 @@
 #include "AIController.h"
-#include <cstdlib> // Cho rand()
+#include <cstdlib>
 
 AIController::AIController(EnemyTank* enemy,
                            const std::vector<Wall*>* walls,
@@ -10,7 +10,6 @@ AIController::AIController(EnemyTank* enemy,
     lastDirectionChange = SDL_GetTicks();
     lastSideChange = SDL_GetTicks();
 
-    // Chọn hướng ban đầu ngẫu nhiên
     int r = rand() % 4;
     switch (r) {
         case 0: controlledEnemy->dirX = 0;            controlledEnemy->dirY = -MOVE_SPEED; break; // Up
@@ -25,31 +24,29 @@ void AIController::Update() {
         return;
 
     Uint32 currentTime = SDL_GetTicks();
-    Uint32 sideChangeCoolDown = 4000; // Ví dụ: 4 giây
+    Uint32 sideChangeCoolDown = 4000;
 
-    // Thử thay đổi hướng bên (trái/phải) với xác suất nhất định
     if (currentTime - lastSideChange >= sideChangeCoolDown) {
         int chance = rand() % 100;
 
-        // Xác định hướng trái/phải dựa theo hướng hiện tại
         int leftX = 0, leftY = 0, rightX = 0, rightY = 0;
-        if (controlledEnemy->dirY < 0) { // đang đi lên
+        if (controlledEnemy->dirY < 0) {            /// đang đi lên
             leftX = -MOVE_SPEED; rightX = MOVE_SPEED;
-        } else if (controlledEnemy->dirY > 0) { // đang đi xuống
+        } else if (controlledEnemy->dirY > 0) {     /// đang đi xuống
             leftX = MOVE_SPEED; rightX = -MOVE_SPEED;
-        } else if (controlledEnemy->dirX < 0) { // đang đi trái
+        } else if (controlledEnemy->dirX < 0) {     /// đang đi trái
             leftY = MOVE_SPEED; rightY = -MOVE_SPEED;
-        } else if (controlledEnemy->dirX > 0) { // đang đi phải
+        } else if (controlledEnemy->dirX > 0) {     /// đang đi phải
             leftY = -MOVE_SPEED; rightY = MOVE_SPEED;
         }
 
-        // Với 20% khả năng đổi hướng sang trái
+        /// Với 20% khả năng đổi hướng sang trái
         if (chance < 20 && CanMove(controlledEnemy->x + leftX, controlledEnemy->y + leftY)) {
             controlledEnemy->dirX = leftX;
             controlledEnemy->dirY = leftY;
             lastSideChange = currentTime;
         }
-        // Với 20% khả năng đổi hướng sang phải
+        /// Với 20% khả năng đổi hướng sang phải
         else if (chance >= 20 && chance < 40 && CanMove(controlledEnemy->x + rightX, controlledEnemy->y + rightY)) {
             controlledEnemy->dirX = rightX;
             controlledEnemy->dirY = rightY;
@@ -57,11 +54,10 @@ void AIController::Update() {
         }
     }
 
-    // Di chuyển theo chế độ patrol (tuần tra)
     MovePatrol();
 
-    // Xác suất bắn ngẫu nhiên (5%)
-    if (rand() % 100 < 5) {
+    /// Xác suất bắn ngẫu nhiên
+    if (rand() % 100 < ENEMY_SHOOT_CHANGE) {
         controlledEnemy->shoot();
     }
     controlledEnemy->updateBullets();
@@ -131,7 +127,7 @@ bool AIController::CanMove(int x, int y) {
 
     /// Kiểm tra va chạm với tường
     for (const auto& wall : *walls) {
-        if (wall->active && SDL_HasIntersection(&newRect, &wall->rect))
+        if (wall->active && SDL_HasIntersection(&newRect, &wall->rect) && wall->type != WallType::LEAF )
             return false;
     }
     /// Kiểm tra giới hạn màn hình

@@ -47,6 +47,10 @@
 		</Linker>
 		<Unit filename="AIController.cpp" />
 		<Unit filename="AIController.h" />
+		<Unit filename="ScoreManager.cpp" />
+		<Unit filename="ScoreManager.h" />
+		<Unit filename="SoundManager.cpp" />
+		<Unit filename="SoundManager.h" />
 		<Unit filename="animation.cpp" />
 		<Unit filename="animation.h" />
 		<Unit filename="base.cpp" />
@@ -58,6 +62,8 @@
 		<Unit filename="enemy.h" />
 		<Unit filename="enemySpawner.cpp" />
 		<Unit filename="enemySpawner.h" />
+		<Unit filename="explosion.cpp" />
+		<Unit filename="explosion.h" />
 		<Unit filename="game.cpp" />
 		<Unit filename="game.h" />
 		<Unit filename="game_screen.cpp" />

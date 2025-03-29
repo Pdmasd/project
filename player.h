@@ -15,7 +15,8 @@ class EnemyTank;
 class PlayerTank {
 public:
     int x, y;
-    int dirX, dirY;
+    int dirX, dirY;             ///Hướng di chuyển
+    int initialX, initialY;     ///Điểm hồi sinh
     SDL_Rect rect;
     vector<Bullet> bullets;
 
@@ -24,10 +25,20 @@ public:
     PlayerTank(int startX, int startY, SDL_Renderer* renderer);
     ~PlayerTank();
 
-    SDL_Texture* texture;   // Sprite sheet của tank
+    SDL_Texture* texture;
     Animation animation;
-    Animation* currentAnim; // Animation hiện tại
+    Animation* currentAnim;
     Animation upAnim, downAnim, leftAnim, rightAnim;
+
+    /// Mạng
+    bool alive;
+    int lives;
+    Uint32 deathTime;               /// Thời điểm tank chết (ms)
+    Uint32 respawnDelay;     ///Thời gian chờ hồi sinh (ms)
+
+    void die();
+    void respawn();
+    void updateStatus();        /// Cập nhật trạng thái
 
     void move(int dx, int dy, const vector<Wall*>& walls, const vector<EnemyTank*>& enemies);
 

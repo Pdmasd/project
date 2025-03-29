@@ -2,7 +2,7 @@
 1584205420 source:c:\users\mac\onedrive\desktop\c++\ltncgame\gameproject\main.cpp
 	<iostream>
 
-1742919414 source:c:\users\mac\onedrive\desktop\c++\gameproject\main.cpp
+1743213881 source:c:\users\mac\onedrive\desktop\c++\gameproject\main.cpp
 	"game.h"
 	"defs.h"
 
@@ -413,18 +413,21 @@
 	"begin_code.h"
 	"close_code.h"
 
-1743098141 c:\users\mac\onedrive\desktop\c++\gameproject\defs.h
+1743237288 c:\users\mac\onedrive\desktop\c++\gameproject\defs.h
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_ttf.h>
 	<iostream>
 	<vector>
+	<cstdlib>
+	<string>
 
-1743100471 source:c:\users\mac\onedrive\desktop\c++\gameproject\player.cpp
+1743247157 source:c:\users\mac\onedrive\desktop\c++\gameproject\player.cpp
 	"player.h"
 	"enemy.h"
+	"SoundManager.h"
 
-1743100164 c:\users\mac\onedrive\desktop\c++\gameproject\player.h
+1743129626 c:\users\mac\onedrive\desktop\c++\gameproject\player.h
 	"defs.h"
 	"wall.h"
 	"bullet.h"
@@ -453,33 +456,34 @@
 1742401804 c:\users\mac\onedrive\desktop\c++\gameproject\fallingobject.h
 	"gameObject.h"
 
-1742923672 source:c:\users\mac\onedrive\desktop\c++\gameproject\animation.cpp
+1743184234 source:c:\users\mac\onedrive\desktop\c++\gameproject\animation.cpp
 	"animation.h"
 
-1742842581 c:\users\mac\onedrive\desktop\c++\gameproject\animation.h
+1743185789 c:\users\mac\onedrive\desktop\c++\gameproject\animation.h
 	<SDL.h>
 	"defs.h"
 
-1743099699 source:c:\users\mac\onedrive\desktop\c++\gameproject\wall.cpp
+1743122078 source:c:\users\mac\onedrive\desktop\c++\gameproject\wall.cpp
 	"wall.h"
 
 1743099699 c:\users\mac\onedrive\desktop\c++\gameproject\wall.h
 	<SDL.h>
 	"defs.h"
 
-1742976572 source:c:\users\mac\onedrive\desktop\c++\gameproject\bullet.cpp
+1743230866 source:c:\users\mac\onedrive\desktop\c++\gameproject\bullet.cpp
 	"bullet.h"
 
-1742919785 c:\users\mac\onedrive\desktop\c++\gameproject\bullet.h
+1743120608 c:\users\mac\onedrive\desktop\c++\gameproject\bullet.h
 	<SDL.h>
 	"defs.h"
 	"wall.h"
 
-1743092892 source:c:\users\mac\onedrive\desktop\c++\gameproject\enemy.cpp
+1743231182 source:c:\users\mac\onedrive\desktop\c++\gameproject\enemy.cpp
 	"enemy.h"
 	"player.h"
+	"SoundManager.h"
 
-1743092892 c:\users\mac\onedrive\desktop\c++\gameproject\enemy.h
+1743120506 c:\users\mac\onedrive\desktop\c++\gameproject\enemy.h
 	"defs.h"
 	"wall.h"
 	"bullet.h"
@@ -487,11 +491,11 @@
 	"wall.h"
 	<algorithm>
 
-1743101442 source:c:\users\mac\onedrive\desktop\c++\gameproject\game.cpp
+1743246972 source:c:\users\mac\onedrive\desktop\c++\gameproject\game.cpp
 	"game.h"
 	"defs.h"
 
-1743099963 c:\users\mac\onedrive\desktop\c++\gameproject\game.h
+1743246195 c:\users\mac\onedrive\desktop\c++\gameproject\game.h
 	<SDL.h>
 	"defs.h"
 	"wall.h"
@@ -501,6 +505,8 @@
 	"game_screen.h"
 	"enemySpawner.h"
 	"AIController.h"
+	"scoreManager.h"
+	"explosion.h"
 	<cstdlib>
 	<fstream>
 
@@ -509,13 +515,16 @@
 	"begin_code.h"
 	"close_code.h"
 
-1742925022 source:c:\users\mac\onedrive\desktop\c++\gameproject\game_screen.cpp
+1743246978 source:c:\users\mac\onedrive\desktop\c++\gameproject\game_screen.cpp
 	"game_screen.h"
 
-1742921460 c:\users\mac\onedrive\desktop\c++\gameproject\game_screen.h
+1743245319 c:\users\mac\onedrive\desktop\c++\gameproject\game_screen.h
 	"defs.h"
+	"SoundManager.h"
+	"player.h"
+	"ScoreManager.h"
 
-1742917302 c:\users\mac\onedrive\desktop\c++\gameproject\base.h
+1743120732 c:\users\mac\onedrive\desktop\c++\gameproject\base.h
 	"defs.h"
 
 1742917262 source:c:\users\mac\onedrive\desktop\c++\gameproject\base.cpp
@@ -540,7 +549,7 @@
 	"Wall.h"
 	"defs.h"
 
-1743100452 source:c:\users\mac\onedrive\desktop\c++\gameproject\aicontroller.cpp
+1743247157 source:c:\users\mac\onedrive\desktop\c++\gameproject\aicontroller.cpp
 	"AIController.h"
 	<cstdlib>
 
@@ -548,5 +557,34 @@
 	"player.h"
 	"Enemy.h"
 	"Wall.h"
+	"defs.h"
+
+1743246049 c:\users\mac\onedrive\desktop\c++\gameproject\scoremanager.h
+
+1743125203 source:c:\users\mac\onedrive\desktop\c++\gameproject\scoremanager.cpp
+	"ScoreManager.h"
+
+1743232499 source:c:\users\mac\onedrive\desktop\c++\gameproject\explosion.cpp
+	"explosion.h"
+
+1743232328 c:\users\mac\onedrive\desktop\c++\gameproject\explosion.h
+	"defs.h"
+
+1743244129 c:\users\mac\onedrive\desktop\c++\gameproject\soundmanager.h
+	<SDL_mixer.h>
+	<map>
+	"defs.h"
+
+1738937080 c:\users\mac\onedrive\desktop\sdl2_mixer-2.8.1\x86_64-w64-mingw32\include\sdl2\sdl_mixer.h
+	"SDL_stdinc.h"
+	"SDL_rwops.h"
+	"SDL_audio.h"
+	"SDL_endian.h"
+	"SDL_version.h"
+	"begin_code.h"
+	"close_code.h"
+
+1743244107 source:c:\users\mac\onedrive\desktop\c++\gameproject\soundmanager.cpp
+	"SoundManager.h"
 	"defs.h"
 

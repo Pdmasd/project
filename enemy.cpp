@@ -1,10 +1,11 @@
 //enemy.cpp
 #include "enemy.h"
 #include "player.h"
+#include "SoundManager.h"
 
 EnemyTank::EnemyTank(int startX, int startY, SDL_Texture* sharedTexture) {
-    moveDelay = 15; // Delay for movement
-    shootDelay = 5; // Delay for shooting
+    moveDelay = 15;
+    shootDelay = 5;
     x = startX;
     y = startY;
     rect = {x, y, TILE_SIZE, TILE_SIZE};
@@ -12,15 +13,15 @@ EnemyTank::EnemyTank(int startX, int startY, SDL_Texture* sharedTexture) {
     dirY = 1;
     active = true;
 
-    texture = sharedTexture; // Sử dụng texture chung
+    texture = sharedTexture;
 
-    // Khởi tạo animation theo hướng
+    /// Khởi tạo animation theo hướng
     upAnim = Animation(texture, 16, 16, 100);
     downAnim = Animation(texture, 16, 16, 100);
     leftAnim = Animation(texture, 16, 16, 100);
     rightAnim = Animation(texture, 16, 16, 100);
 
-    // Thêm frame cho từng hướng
+    /// Thêm frame cho từng hướng
     upAnim.addFrame(128, 0);
     upAnim.addFrame(144, 0);
 
@@ -76,10 +77,24 @@ EnemyTank& EnemyTank::operator=(EnemyTank&& other) noexcept {
 }
 
 void EnemyTank::shoot() {
+    bool canShoot = true;
     if (--shootDelay > 0) return;
     shootDelay = 5;
-    bullets.push_back(Bullet(x + TILE_SIZE / 2 - 5, y + TILE_SIZE / 2 - 5,
-                                this->dirX, this->dirY));
+
+    for (auto &bullet : bullets) {
+        if (bullet.active) {
+            canShoot = false;
+            break;
+        }
+    }
+
+    if (canShoot) {
+        SoundManager::loadSound("shoot_bullet", "sound/shoot_bullet.wav");
+        SoundManager::playSound("shoot_bullet", 0);
+
+        bullets.push_back(Bullet(x + TILE_SIZE / 2 - 5, y + TILE_SIZE / 2 - 5,
+                                   this->dirX, this->dirY));
+    }
 }
 
 void EnemyTank::updateBullets() {
