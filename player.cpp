@@ -17,7 +17,7 @@ PlayerTank::PlayerTank(int startX, int startY, SDL_Renderer* renderer) :
     dirY = -1; /// mặc định hướng lên
 
     alive = true;
-    lives = 3;
+    lives = MAX_LIVES;
     deathTime = 0;
 
     SDL_Surface* surface = IMG_Load("image/sheet.png");
@@ -117,7 +117,6 @@ void PlayerTank::die() {
 
 void PlayerTank::respawn() {
     if (lives > 0) {
-        lives--;
         x = initialX;
         y = initialY;
         rect.x = x;

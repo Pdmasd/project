@@ -24,7 +24,7 @@ public:
     PlayerTank player(int startX, int startY, SDL_Renderer* renderer);
     bool isTwoPlayerMode = false;
     void setGame(Game* g) { game = g; }
-    //void loadProgress();
+
 private:
     Game* game;
 

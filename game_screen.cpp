@@ -77,16 +77,16 @@ void GameScreen::showMainMenu(SDL_Renderer* renderer, bool &isRunning, bool &isT
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, backgroundTexture, nullptr, nullptr);
 
-        SDL_Color gray = {128, 128, 128, 255};
+        //SDL_Color gray = {128, 128, 128, 255};
         SDL_Color yellow = {255, 223, 0, 255};
         SDL_Color orange = {255, 165, 0, 255};
 
         //renderText("Continue", 350, 400, (selectedItem == 0) ? (saveExists ? yellow : gray) : (saveExists ? orange : gray));
-        renderText("1 Player", 350, 450, (selectedItem == 1) ? yellow : orange);
-        renderText("2 Player", 350, 500, (selectedItem == 2) ? yellow : orange);
-        renderText("Exit", 350, 550, (selectedItem == 3) ? yellow : orange);
+        renderText("1  Player", 300, 450, (selectedItem == 1) ? yellow : orange);
+        renderText("2  Players", 300, 500, (selectedItem == 2) ? yellow : orange);
+        renderText("Exit", 300, 550, (selectedItem == 3) ? yellow : orange);
 
-        SDL_Rect pointerRect = {300, 0, 32, 32};
+        SDL_Rect pointerRect = {250, 0, 32, 32};
 
         if (selectedItem == 1)
             pointerRect.y = 460;

@@ -1,6 +1,5 @@
 //game.cpp
 #include "game.h"
-#include "defs.h"
 
 using namespace std;
 
@@ -67,7 +66,7 @@ Game::Game(): player(100, 100, nullptr){
         running = false;
     }
 
-    generateWalls("stage1.txt");
+    generateWalls("map/stage1.txt");
     base = new Base(7 * TILE_SIZE, 13 * TILE_SIZE, renderer, "image/base.png");
     player = PlayerTank(4 * TILE_SIZE, 13 * TILE_SIZE, renderer);
 
@@ -169,12 +168,16 @@ void Game::generateWalls(const std::string& mapFile) {
 
 void Game::handleEvents() {
     SDL_Event event;
+
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE) {
             running = false;
         }
         else if (event.type == SDL_KEYDOWN) {
             if (event.key.keysym.sym == SDLK_p) {
+                SoundManager::loadSound("pause", "sound/pause.wav");
+                SoundManager::playSound("pause", 0);
+
                 if(pause)
                     pause = false;
                 else if(!pause)
@@ -188,6 +191,7 @@ void Game::handleEvents() {
             }  else if(event.key.keysym.sym == SDLK_m){
                 if(pause){
                     pause = false;
+                    resetGame();
                     GameScreen screen(renderer);
                     screen.showMainMenu(renderer, running, isTwoPlayerMode);
                 }
@@ -438,6 +442,7 @@ void Game::update() {
             if (SDL_HasIntersection(&bullet.rect, &player.rect)) {
                 bullet.active = false;
                 player.die();
+                player.lives--;
 
                 Explosion* exp = new Explosion(enemyTexture, player.x, player.y, 0);
                 explosionList.push_back(exp);
@@ -560,6 +565,7 @@ void Game::update() {
                 if (SDL_HasIntersection(&bullet.rect, &player2->rect)) {
                     bullet.active = false;
                     player2->die();
+                    player2->lives--;
 
                     Explosion* exp = new Explosion(enemyTexture, player2->x, player2->y, 0);
                     explosionList.push_back(exp);
@@ -651,7 +657,8 @@ void Game::render() {
     else if(currentLevel == 2) enemyCount = enemyCount2;
     else if(currentLevel == 3) enemyCount = enemyCount3;
 
-    int player2Lives = (isTwoPlayerMode && player2 != nullptr) ? player2->lives : 0;
+    //int player2Lives = (isTwoPlayerMode && player2 != nullptr) ? player2->lives : player2->MAX_LIVES;
+    int player2Lives = player2->lives;
     screen.figures(player.lives, player2Lives, score.getScore(), enemyCount - enemySpawner->getSpawnedCount(), isTwoPlayerMode);
 
     SDL_RenderPresent(renderer);
@@ -735,11 +742,11 @@ void Game::resetGame() {
     }
     walls.clear();
     if(currentLevel == 3 && game_over == false){
-        generateWalls("stage3.txt");
+        generateWalls("map/stage3.txt");
     } else if (currentLevel == 2 && game_over == false) {
-        generateWalls("stage2.txt");
+        generateWalls("map/stage2.txt");
     } else {
-        generateWalls("stage1.txt");
+        generateWalls("map/stage1.txt");
     }
 
     player.respawn();
@@ -760,9 +767,9 @@ void Game::resetGame() {
     if (game_over == true) {
         currentLevel = 1;
         score.reset();
-        player.lives = 3;
+        player.lives = MAX_LIVES;
         if (isTwoPlayerMode && player2 != nullptr) {
-            player2->lives = 3;
+            player2->lives = MAX_LIVES;
         }
     }
 

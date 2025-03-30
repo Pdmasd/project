@@ -24,6 +24,7 @@ const int HIT_BOX = 35;
 const float MOVE_SPEED = 3;
 const float BULLET_SPEED = 3;
 const int ENEMY_SHOOT_CHANGE = 8;     ///(%)
+const int MAX_LIVES = 4;
 
 const int MAP_WIDTH = SCREEN_WIDTH / TILE_SIZE;     ///=15
 const int MAP_HEIGHT = SCREEN_HEIGHT / TILE_SIZE;   ///=15

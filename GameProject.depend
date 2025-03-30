@@ -2,7 +2,7 @@
 1584205420 source:c:\users\mac\onedrive\desktop\c++\ltncgame\gameproject\main.cpp
 	<iostream>
 
-1743342089 source:c:\users\mac\onedrive\desktop\c++\gameproject\main.cpp
+1743358043 source:c:\users\mac\onedrive\desktop\c++\gameproject\main.cpp
 	"game.h"
 	"defs.h"
 
@@ -413,7 +413,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1743335301 c:\users\mac\onedrive\desktop\c++\gameproject\defs.h
+1743360907 c:\users\mac\onedrive\desktop\c++\gameproject\defs.h
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_ttf.h>
@@ -423,12 +423,12 @@
 	<string>
 	<fstream>
 
-1743306593 source:c:\users\mac\onedrive\desktop\c++\gameproject\player.cpp
+1743359603 source:c:\users\mac\onedrive\desktop\c++\gameproject\player.cpp
 	"player.h"
 	"enemy.h"
 	"SoundManager.h"
 
-1743274662 c:\users\mac\onedrive\desktop\c++\gameproject\player.h
+1743360907 c:\users\mac\onedrive\desktop\c++\gameproject\player.h
 	"defs.h"
 	"wall.h"
 	"bullet.h"
@@ -479,7 +479,7 @@
 	"defs.h"
 	"wall.h"
 
-1743343858 source:c:\users\mac\onedrive\desktop\c++\gameproject\enemy.cpp
+1743344383 source:c:\users\mac\onedrive\desktop\c++\gameproject\enemy.cpp
 	"enemy.h"
 	"player.h"
 	"SoundManager.h"
@@ -492,11 +492,10 @@
 	"wall.h"
 	<algorithm>
 
-1743344127 source:c:\users\mac\onedrive\desktop\c++\gameproject\game.cpp
+1743360999 source:c:\users\mac\onedrive\desktop\c++\gameproject\game.cpp
 	"game.h"
-	"defs.h"
 
-1743343733 c:\users\mac\onedrive\desktop\c++\gameproject\game.h
+1743358916 c:\users\mac\onedrive\desktop\c++\gameproject\game.h
 	<SDL.h>
 	"defs.h"
 	"wall.h"
@@ -516,10 +515,10 @@
 	"begin_code.h"
 	"close_code.h"
 
-1743342460 source:c:\users\mac\onedrive\desktop\c++\gameproject\game_screen.cpp
+1743359703 source:c:\users\mac\onedrive\desktop\c++\gameproject\game_screen.cpp
 	"game_screen.h"
 
-1743342647 c:\users\mac\onedrive\desktop\c++\gameproject\game_screen.h
+1743358941 c:\users\mac\onedrive\desktop\c++\gameproject\game_screen.h
 	"defs.h"
 	"SoundManager.h"
 	"player.h"
@@ -538,7 +537,7 @@
 	<vector>
 	<algorithm>
 
-1743343858 source:c:\users\mac\onedrive\desktop\c++\gameproject\enemyspawner.cpp
+1743344384 source:c:\users\mac\onedrive\desktop\c++\gameproject\enemyspawner.cpp
 	"EnemySpawner.h"
 	"AIController.h"
 	<cstdlib>

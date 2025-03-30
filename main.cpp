@@ -8,4 +8,6 @@ int main(int argc, char* argv[]) {
     if (game.running) {
         game.run();
     }
+
+    return 0;
 }

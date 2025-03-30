@@ -70,10 +70,6 @@ public:
     void run();
     void resetGame();
 
-    void saveProgress();
-    void loadProgress();
-    void deleteSaveGame();
-
     bool playAgain;
 };
 
