@@ -25,6 +25,8 @@ public:
     PlayerTank(int startX, int startY, SDL_Renderer* renderer);
     ~PlayerTank();
 
+    void initPlayer2Animations(SDL_Texture* texture);
+
     SDL_Texture* texture;
     Animation animation;
     Animation* currentAnim;
@@ -34,13 +36,13 @@ public:
     bool alive;
     int lives;
     Uint32 deathTime;               /// Thời điểm tank chết (ms)
-    Uint32 respawnDelay;     ///Thời gian chờ hồi sinh (ms)
+    Uint32 respawnDelay;            ///Thời gian chờ hồi sinh (ms)
 
     void die();
     void respawn();
-    void updateStatus();        /// Cập nhật trạng thái
+    void updateStatus();            /// Cập nhật trạng thái
 
-    void move(int dx, int dy, const vector<Wall*>& walls, const vector<EnemyTank*>& enemies);
+    void move(int dx, int dy, const vector<Wall*>& walls, const vector<EnemyTank*>& enemies, const PlayerTank* otherPlayer = nullptr);
 
     void shoot();
     void updateBullets();

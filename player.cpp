@@ -49,6 +49,25 @@ PlayerTank::PlayerTank(int startX, int startY, SDL_Renderer* renderer) :
     rightAnim.addFrame(112, 0);
 }
 
+void PlayerTank::initPlayer2Animations(SDL_Texture* texture) {
+    upAnim = Animation(texture, 16, 16, 100);
+    downAnim = Animation(texture, 16, 16, 100);
+    leftAnim = Animation(texture, 16, 16, 100);
+    rightAnim = Animation(texture, 16, 16, 100);
+
+    upAnim.addFrame(0, 128);
+    upAnim.addFrame(16, 128);
+
+    leftAnim.addFrame(32, 128);
+    leftAnim.addFrame(48, 128);
+
+    downAnim.addFrame(64, 128);
+    downAnim.addFrame(80, 128);
+
+    rightAnim.addFrame(96, 128);
+    rightAnim.addFrame(112, 128);
+}
+
 PlayerTank::~PlayerTank() {}
 
 void PlayerTank::shoot() {
@@ -124,7 +143,7 @@ void PlayerTank::render(SDL_Renderer* renderer) {
     }
 }
 
-void PlayerTank::move(int dx, int dy, const vector<Wall*>& walls, const vector<EnemyTank*>& enemies) {
+void PlayerTank::move(int dx, int dy, const vector<Wall*>& walls, const vector<EnemyTank*>& enemies, const PlayerTank* otherPlayer) {
     if (!alive) return;
 
     this->dirX = dx;
@@ -135,6 +154,11 @@ void PlayerTank::move(int dx, int dy, const vector<Wall*>& walls, const vector<E
     else if (dy > 0) currentAnim = &downAnim;   /// Xuống
     else if (dx < 0) currentAnim = &leftAnim;   /// Trái
     else if (dx > 0) currentAnim = &rightAnim;  /// Phải
+
+    if(dx != 0 || dy != 0){
+//        SoundManager::loadSound("move", "sound/move.wav");
+//        SoundManager::playSound("move", 0);
+    }
 
     int newX = x + dx;
     int newY = y + dy;
@@ -151,6 +175,10 @@ void PlayerTank::move(int dx, int dy, const vector<Wall*>& walls, const vector<E
         if (enemy->active && SDL_HasIntersection(&newRect, &enemy->rect)) {
             return;
         }
+    }
+
+    if (otherPlayer && SDL_HasIntersection(&newRect, &otherPlayer->rect)) {
+        return;
     }
 
     if (newX >= TILE_SIZE && newX <= SCREEN_WIDTH - TILE_SIZE * 2 &&

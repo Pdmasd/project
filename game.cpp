@@ -6,6 +6,7 @@ using namespace std;
 
 SDL_Texture* enemyTexture = nullptr;
 EnemySpawner* enemySpawner = nullptr;
+bool isTwoPlayerMode = false;
 
 ///Làm trong suốt phần màu (gần) đen trong sheet
 SDL_Texture* loadTransparentSprite(const std::string& path, SDL_Renderer* renderer) {
@@ -26,6 +27,11 @@ SDL_Texture* loadTransparentSprite(const std::string& path, SDL_Renderer* render
 Game::Game(): player(100, 100, nullptr){
     running = true;
     pause = false;
+
+    currentLevel = 1;
+    enemyCount1 = 10;
+    enemyCount2 = 15;
+    enemyCount3 = 100;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
@@ -48,8 +54,10 @@ Game::Game(): player(100, 100, nullptr){
 
     /// Hiển thị màn hình chờ
     GameScreen screen(renderer);
-    screen.showMainMenu(renderer, running);
-    screen.showStageIntro(renderer, 1);
+    screen.showMainMenu(renderer, running, isTwoPlayerMode);
+    if(running){
+        screen.showStageIntro(renderer, currentLevel);
+    }
 
     /// Tải texture chung cho enemy
     enemyTexture = loadTransparentSprite("image/sheet.png", renderer);
@@ -59,17 +67,24 @@ Game::Game(): player(100, 100, nullptr){
         running = false;
     }
 
-    generateWalls();
-    base = new Base((MAP_WIDTH / 2) * TILE_SIZE, (MAP_HEIGHT - 2) * TILE_SIZE, renderer, "image/base.png");
-    player = PlayerTank(((MAP_WIDTH) / 2) * TILE_SIZE, (MAP_HEIGHT - 4) * TILE_SIZE, renderer);
+    generateWalls("stage1.txt");
+    base = new Base(7 * TILE_SIZE, 13 * TILE_SIZE, renderer, "image/base.png");
+    player = PlayerTank(4 * TILE_SIZE, 13 * TILE_SIZE, renderer);
+
+    if (isTwoPlayerMode) {
+        player2 = new PlayerTank(10 * TILE_SIZE, 13 * TILE_SIZE, renderer);
+        player2->initPlayer2Animations(player2->texture);
+    } else {
+        player2 = nullptr;
+    }
 
     enemySpawner = new EnemySpawner(enemyTexture, enemies, aiControllers, &walls, player.x, player.y, base->x, base->y, &player);
-    enemySpawner->spawnEnemies(10, 4000);
+    enemySpawner->spawnEnemies(enemyCount1, 4000);
 }
 
 Game::~Game() {
     delete base;
-    SDL_DestroyTexture(enemyTexture); // Giải phóng texture chung
+    SDL_DestroyTexture(enemyTexture);
 
     for (auto enemy : enemies) {
         delete enemy;
@@ -77,6 +92,11 @@ Game::~Game() {
     for (auto ai : aiControllers) {
         delete ai;
     }
+
+    if (player2 != nullptr) {
+        delete player2;
+    }
+
     delete enemySpawner;
 
     SDL_DestroyRenderer(renderer);
@@ -84,21 +104,27 @@ Game::~Game() {
     SDL_Quit();
 }
 
-void Game::generateWalls() {
-    std::ifstream mapFile("map.txt");
-    if (!mapFile.is_open()) {
-        SDL_Log("Không thể mở file map.txt");
+void Game::generateWalls(const std::string& mapFile) {
+    ifstream file(mapFile);
+    if (!file.is_open()) {
+        SDL_Log("Không thể mở file %s", mapFile.c_str());
         return;
     }
 
     vector<string> mapData;
     string line;
-    while (getline(mapFile, line)) {
+    while (std::getline(file, line)) {
         mapData.push_back(line);
     }
-    mapFile.close();
+    file.close();
 
-    // Duyệt qua mapData và tạo tường
+    /// Xóa các wall từ stage trước
+    for (auto wall : walls) {
+        delete wall;
+    }
+    walls.clear();
+
+    /// Duyệt qua mapData và tạo tường
     for (size_t y = 0; y < mapData.size(); ++y) {
         for (size_t  x = 0; x < mapData[y].size(); ++x) {
             char tile = mapData[y][x];
@@ -123,12 +149,12 @@ void Game::generateWalls() {
                     texturePath = "image/water.png";
                     break;
                 default:
-                    continue; // Bỏ qua ô trống
+                    continue;
             }
             int wallX = x * TILE_SIZE;
             int wallY = y * TILE_SIZE;
 
-            // Nếu là Brick thì tạo nhóm 16 Brick nhỏ
+            /// Nếu là Brick thì tạo nhóm 16 Brick nhỏ
             if (type == WallType::BRICK) {
                 vector<Wall*> brickGroup = Wall::createBrickGroup(wallX, wallY, renderer, texturePath);
                 for (auto brick : brickGroup) {
@@ -139,8 +165,6 @@ void Game::generateWalls() {
             }
         }
     }
-
-    //SDL_Log("Bản đồ đã tải thành công!");
 }
 
 void Game::handleEvents() {
@@ -155,13 +179,27 @@ void Game::handleEvents() {
                     pause = false;
                 else if(!pause)
                     pause = true;
+            } else if(event.key.keysym.sym == SDLK_o){
+                if(pause){
+                    pause = false;
+                    resetGame();
+                    game_over = true;
+                }
+            }  else if(event.key.keysym.sym == SDLK_m){
+                if(pause){
+                    pause = false;
+                    GameScreen screen(renderer);
+                    screen.showMainMenu(renderer, running, isTwoPlayerMode);
+                }
             }
         }
     }
 
+
     if(pause){
         GameScreen screen(renderer);
         screen.showPauseGame(renderer);
+
         SDL_RenderPresent(renderer);
         return;
     }
@@ -182,7 +220,7 @@ void Game::handleEvents() {
 
     /// Cập nhật vị trí nếu có di chuyển
     if (dx != 0 || dy != 0) {
-        player.move(dx, dy, walls, enemies);
+        player.move(dx, dy, walls, enemies, player2);
     }
 
     /// Xử lý bắn đạn (giữ SPACE để bắn liên tục)
@@ -192,15 +230,46 @@ void Game::handleEvents() {
         bulletCooldown = 25;
     }
     if (bulletCooldown > 0) bulletCooldown--;
+
+    /// Player 2
+    if (isTwoPlayerMode && player2 != nullptr) {
+        int dx2 = 0, dy2 = 0;
+        if (keyState[SDL_SCANCODE_W]) {
+            dy2 = -MOVE_SPEED;
+        } else if (keyState[SDL_SCANCODE_S]) {
+            dy2 = MOVE_SPEED;
+        }
+        if (keyState[SDL_SCANCODE_A]) {
+            dx2 = -MOVE_SPEED;
+        } else if (keyState[SDL_SCANCODE_D]) {
+            dx2 = MOVE_SPEED;
+        }
+        if (dx2 != 0 || dy2 != 0) {
+            player2->move(dx2, dy2, walls, enemies, &player);
+        }
+
+        static int bulletCooldown2 = 0;
+        if (keyState[SDL_SCANCODE_E] && bulletCooldown2 == 0) {
+            player2->shoot();
+            bulletCooldown2 = 25;
+        }
+        if (bulletCooldown2 > 0) bulletCooldown2--;
+    }
 }
 
 void Game::update() {
     player.updateStatus();
 
+    if (isTwoPlayerMode && player2 != nullptr) {
+        player2->updateStatus();
+    }
+
     Uint32 currentTime = SDL_GetTicks();
     static Uint32 lastTime = currentTime; /// Khởi tạo lastTime tĩnh
     Uint32 deltaTime = currentTime - lastTime;
     lastTime = currentTime;
+
+
 
     ///Đạn player bắn trúng tường
     for (auto& bullet : player.bullets) {
@@ -283,7 +352,13 @@ void Game::update() {
         }
     }
 
-    enemySpawner->spawnEnemies(10, 3000);
+    if (currentLevel == 3) {
+        enemySpawner->spawnEnemies(enemyCount3, 2500);
+    } else if (currentLevel == 2) {
+        enemySpawner->spawnEnemies(enemyCount2, 3000);
+    } else {
+        enemySpawner->spawnEnemies(enemyCount1, 4000);
+    }
 
     /// Cập nhật AI cho mỗi enemy thông qua các AIController
     for (auto ai : aiControllers) {
@@ -370,9 +445,16 @@ void Game::update() {
                 SoundManager::loadSound("explosion", "sound/explosion.wav");
                 SoundManager::playSound("explosion", 0);
 
-                if (!player.alive && player.lives == 0) {
-                    game_over = true;
-                    return;
+                if(!isTwoPlayerMode){
+                    if (!player.alive && player.lives == 0) {
+                        game_over = true;
+                        return;
+                    }
+                } else {
+                    if (!player.alive && !player2->alive && player.lives == 0 && player2->lives == 0) {
+                        game_over = true;
+                        return;
+                    }
                 }
             }
         }
@@ -390,6 +472,117 @@ void Game::update() {
         }
     }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// Player 2
+    if (isTwoPlayerMode && player2 != nullptr) {
+
+        for (auto& bullet : player2->bullets) {
+            for (auto& wall : walls) {
+                if (wall->active && SDL_HasIntersection(&bullet.rect, &wall->rect)) {
+                    if (wall->type == WallType::BRICK) {
+                        wall->hit();
+                        bullet.active = false;
+
+                        Explosion* exp = new Explosion(enemyTexture, wall->rect.x, wall->rect.y, 2);
+                        explosionList.push_back(exp);
+
+                        SoundManager::loadSound("explosion", "sound/explosion.wav");
+                        SoundManager::playSound("explosion", 0);
+
+                        int groupBaseX = (wall->x / TILE_SIZE) * TILE_SIZE;
+                        int groupBaseY = (wall->y / TILE_SIZE) * TILE_SIZE;
+                        int smallSize = TILE_SIZE / 4;
+
+                        /// Xác định vị trí của brick bị trúng
+                        int hitRow = (wall->y - groupBaseY) / smallSize;
+                        int hitCol = (wall->x - groupBaseX) / smallSize;
+
+                        /// Nếu đạn được bắn theo chiều dọc
+                        if (bullet.dx == 0 && bullet.dy != 0) {
+                            for (auto &otherBrick : walls) {
+                                if (!otherBrick->active)
+                                    continue;
+
+                                if (otherBrick->x >= groupBaseX && otherBrick->x < groupBaseX + TILE_SIZE &&
+                                    otherBrick->y >= groupBaseY && otherBrick->y < groupBaseY + TILE_SIZE) {
+                                    int row = (otherBrick->y - groupBaseY) / smallSize;
+                                    int col = (otherBrick->x - groupBaseX) / smallSize;
+
+                                    if (row == hitRow && abs(col - hitCol) <= 2) {
+                                        otherBrick->hit();
+                                    }
+                                }
+                            }
+                        }
+                        /// Nếu đạn bắn theo chiều ngang
+                        else if (bullet.dy == 0 && bullet.dx != 0) {
+                            for (auto &otherBrick : walls) {
+                                if (!otherBrick->active)
+                                    continue;
+                                if (otherBrick->x >= groupBaseX && otherBrick->x < groupBaseX + TILE_SIZE &&
+                                    otherBrick->y >= groupBaseY && otherBrick->y < groupBaseY + TILE_SIZE) {
+                                    int row = (otherBrick->y - groupBaseY) / smallSize;
+                                    int col = (otherBrick->x - groupBaseX) / smallSize;
+
+                                    if (col == hitCol && abs(row - hitRow) <= 2) {
+                                        otherBrick->hit();
+                                    }
+                                }
+                            }
+                        }
+                    } else if (wall->type == WallType::STEEL) {
+                        bullet.active = false;
+                    }
+                    break;
+                }
+            }
+        }
+
+        for (auto& bullet : player2->bullets) {
+            for (auto& enemy : enemies) {
+                if (enemy->active && SDL_HasIntersection(&bullet.rect, &enemy->rect)) {
+                    enemy->active = false;
+                    bullet.active = false;
+
+                    score.addPoints(100);
+
+                    Explosion* exp = new Explosion(enemyTexture, enemy->rect.x, enemy->rect.y, 1);
+                    explosionList.push_back(exp);
+
+                    SoundManager::loadSound("explosion", "sound/explosion.wav");
+                    SoundManager::playSound("explosion", 0);
+                }
+            }
+        }
+
+        for (auto& enemy : enemies) {
+            for (auto& bullet : enemy->bullets) {
+                if (SDL_HasIntersection(&bullet.rect, &player2->rect)) {
+                    bullet.active = false;
+                    player2->die();
+
+                    Explosion* exp = new Explosion(enemyTexture, player2->x, player2->y, 0);
+                    explosionList.push_back(exp);
+
+                    SoundManager::loadSound("explosion", "sound/explosion.wav");
+                    SoundManager::playSound("explosion", 0);
+
+                    if (!player.alive && !player2->alive && player.lives == 0 && player2->lives == 0) {
+                        game_over = true;
+                        return;
+                    }
+                }
+            }
+        }
+        for (auto& bullet : player2->bullets) {
+            if (bullet.active && SDL_HasIntersection(&bullet.rect, &base->rect)) {
+                base->destroy();
+                game_over = true;
+                return;
+            }
+        }
+    }
+/////////////////////////////////////////////////////////////////////////////////////////////////////
     ///Kiểm tra nhà chính bị hủy chưa
     for (auto& enemy : enemies) {
         for (auto& bullet : enemy->bullets) {
@@ -434,6 +627,10 @@ void Game::render() {
 
     player.render(renderer);
 
+    if (isTwoPlayerMode && player2 != nullptr) {
+        player2->render(renderer);
+    }
+
     for(auto &enemy : enemies){
         enemy->render(renderer);
     }
@@ -448,18 +645,56 @@ void Game::render() {
         exp->render(renderer);
     }
     GameScreen screen(renderer);
-    screen.figures(player.lives, score.getScore());
+    int enemyCount;
+
+    if(currentLevel == 1) enemyCount = enemyCount1;
+    else if(currentLevel == 2) enemyCount = enemyCount2;
+    else if(currentLevel == 3) enemyCount = enemyCount3;
+
+    int player2Lives = (isTwoPlayerMode && player2 != nullptr) ? player2->lives : 0;
+    screen.figures(player.lives, player2Lives, score.getScore(), enemyCount - enemySpawner->getSpawnedCount(), isTwoPlayerMode);
 
     SDL_RenderPresent(renderer);
 }
 
 void Game::run() {
+    static bool waitingForTransition = false;
+    static Uint32 transitionStartTime = 0;
+
     while (running) {
             handleEvents();
 
-        if(!pause){
+        if(!pause && !game_over){
             update();
             render();
+        }
+
+        if (currentLevel == 1 && enemySpawner->getSpawnedCount() >= enemyCount1 && enemies.empty()) {
+            if (!waitingForTransition) {
+                waitingForTransition = true;
+                transitionStartTime = SDL_GetTicks();
+            } else if (SDL_GetTicks() - transitionStartTime >= 4000) {
+                GameScreen screen1(renderer);
+                screen1.showStageIntro(renderer, 2);
+
+                currentLevel = 2;
+                resetGame();
+
+                waitingForTransition = false;
+            }
+        } else if (currentLevel == 2 && enemySpawner->getSpawnedCount() >= enemyCount2 && enemies.empty()) {
+            if (!waitingForTransition) {
+                waitingForTransition = true;
+                transitionStartTime = SDL_GetTicks();
+            } else if (SDL_GetTicks() - transitionStartTime >= 4000) {
+                GameScreen screen1(renderer);
+                screen1.showStageIntro(renderer, 3);
+
+                currentLevel = 3;
+                resetGame();
+
+                waitingForTransition = false;
+            }
         }
 
         if (game_over) {
@@ -469,7 +704,7 @@ void Game::run() {
 
             if (backToMenu) {
                 resetGame();
-                screen.showMainMenu(renderer, running);
+                screen.showMainMenu(renderer, running, isTwoPlayerMode);
             } else {
                 running = false;
             }
@@ -499,9 +734,18 @@ void Game::resetGame() {
         delete wall;
     }
     walls.clear();
-    generateWalls();
+    if(currentLevel == 3 && game_over == false){
+        generateWalls("stage3.txt");
+    } else if (currentLevel == 2 && game_over == false) {
+        generateWalls("stage2.txt");
+    } else {
+        generateWalls("stage1.txt");
+    }
 
-    player = PlayerTank(((MAP_WIDTH) / 2) * TILE_SIZE, (MAP_HEIGHT - 4) * TILE_SIZE, renderer);
+    player.respawn();
+    if (isTwoPlayerMode && player2 != nullptr) {
+        player2->respawn();
+    }
 
     if (base != nullptr) {
         delete base;
@@ -512,12 +756,18 @@ void Game::resetGame() {
         delete enemySpawner;
     }
     enemySpawner = new EnemySpawner(enemyTexture, enemies, aiControllers, &walls, player.x, player.y, base->x, base->y, &player);
-    enemySpawner->spawnEnemies(10, 4000);
+
+    if (game_over == true) {
+        currentLevel = 1;
+        score.reset();
+        player.lives = 3;
+        if (isTwoPlayerMode && player2 != nullptr) {
+            player2->lives = 3;
+        }
+    }
 
     game_over = false;
     pause = false;
-
-    score.reset();
 }
 
 

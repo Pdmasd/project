@@ -34,14 +34,13 @@ EnemyTank::EnemyTank(int startX, int startY, SDL_Texture* sharedTexture) {
     rightAnim.addFrame(224, 0);
     rightAnim.addFrame(240, 0);
 
-    currentAnim = &downAnim; // Mặc định quay xuống
+    currentAnim = &downAnim; /// Mặc định quay xuống
 }
 
 EnemyTank::~EnemyTank() {
     texture = nullptr;
 }
 
-// Move constructor
 EnemyTank::EnemyTank(EnemyTank&& other) noexcept
     : x(other.x), y(other.y), dirX(other.dirX), dirY(other.dirY), rect(other.rect),
       active(other.active), texture(other.texture),
@@ -49,10 +48,9 @@ EnemyTank::EnemyTank(EnemyTank&& other) noexcept
       leftAnim(std::move(other.leftAnim)), rightAnim(std::move(other.rightAnim)),
       bullets(std::move(other.bullets)) {
     currentAnim = other.currentAnim;
-    other.texture = nullptr; // Đảm bảo texture không bị giải phóng
+    other.texture = nullptr; /// Đảm bảo texture không bị giải phóng
 }
 
-// Move assignment
 EnemyTank& EnemyTank::operator=(EnemyTank&& other) noexcept {
     if (this != &other) {
         x = other.x;
@@ -62,7 +60,7 @@ EnemyTank& EnemyTank::operator=(EnemyTank&& other) noexcept {
         rect = other.rect;
         active = other.active;
 
-        // Di chuyển animation và texture
+        /// Di chuyển animation và texture
         texture = other.texture;
         upAnim = std::move(other.upAnim);
         downAnim = std::move(other.downAnim);
@@ -107,7 +105,7 @@ void EnemyTank::updateBullets() {
 
 void EnemyTank::render(SDL_Renderer* renderer) {
     if (currentAnim) {
-        currentAnim->render(renderer, x, y);  // Render bằng animation
+        currentAnim->render(renderer, x, y);  /// Render bằng animation
     }
     for (auto &bullet : bullets) {
         bullet.render(renderer);

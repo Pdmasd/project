@@ -18,40 +18,49 @@
 #include <cstdlib>
 #include <fstream>
 struct ExplosionAnimation {
-    Animation* anim;  // Con trỏ đến animation của explosion
-    SDL_Rect rect;    // Vị trí và kích thước render của explosion
+    Animation* anim;
+    SDL_Rect rect;
 };
 
 class Game {
 private:
     Base* base;
-    ScoreManager score;
-
-    vector<Wall*> walls;
-    vector<EnemyTank*> enemies;
     vector<AIController*> aiControllers;
     vector<Explosion*> explosionList;
 
     EnemySpawner* enemySpawner;
+    int spawnedEnemies = 0;
 public:
     SDL_Window* window;
     SDL_Renderer* renderer;
 
-    bool running;
-    bool pause;
-    bool game_over = false;
+    SDL_Texture* enemyTexture = nullptr;
 
     PlayerTank player;
-    int spawnedEnemies = 0;
-    int enemyNumber = 5;
+    PlayerTank* player2;
+
+    vector<Wall*> walls;
+    vector<EnemyTank*> enemies;
+
+    ScoreManager score;
+
+    bool continueGame;
+
+    bool running;
+    bool pause;
+    bool game_over;
+    int currentLevel;     /// Cấp độ hiện tại
+    int enemyCount1;
+    int enemyCount2;
+    int enemyCount3;
 
     Game();
+    ~Game();
 
     void render();
     void update();
-    ~Game();
 
-    void generateWalls();
+    void generateWalls(const std::string& mapFile);
     void handleEvents();
 
     void spawnEnemies();
@@ -60,6 +69,12 @@ public:
     void checkGameOver();
     void run();
     void resetGame();
+
+    void saveProgress();
+    void loadProgress();
+    void deleteSaveGame();
+
+    bool playAgain;
 };
 
 

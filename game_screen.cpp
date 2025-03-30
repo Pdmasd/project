@@ -29,7 +29,8 @@ void GameScreen::renderText(const std::string& text, int x, int y, SDL_Color col
     SDL_DestroyTexture(texture);
 }
 
-void GameScreen::showMainMenu(SDL_Renderer* renderer, bool &isRunning) {
+void GameScreen::showMainMenu(SDL_Renderer* renderer, bool &isRunning, bool &isTwoPlayerMode) {
+
     SDL_Texture* backgroundTexture = IMG_LoadTexture(renderer, "image/menu_background.png");
     SDL_Texture* pointerTexture = IMG_LoadTexture(renderer, "image/pointer.png");
 
@@ -51,13 +52,22 @@ void GameScreen::showMainMenu(SDL_Renderer* renderer, bool &isRunning) {
             } else if (event.type == SDL_KEYDOWN) {
                 if (event.key.keysym.sym == SDLK_ESCAPE) {
                     isRunning = false;
-                } else if (event.key.keysym.sym == SDLK_UP || event.key.keysym.sym == SDLK_DOWN) {
-                    selectedItem = (selectedItem == 1) ? 2 : 1;
+                } else if (event.key.keysym.sym == SDLK_UP) {
+                    selectedItem--;
+                    if (selectedItem < 1) selectedItem = 3;
+                } else if (event.key.keysym.sym == SDLK_DOWN) {
+                    selectedItem++;
+                    if (selectedItem > 3) selectedItem = 1;
                 } else if (event.key.keysym.sym == SDLK_RETURN) {
                     if (selectedItem == 1) {
+                        isTwoPlayerMode = false;
                         SoundManager::freeSound("menu");
                         return;
                     } else if (selectedItem == 2) {
+                        isTwoPlayerMode = true;
+                        SoundManager::freeSound("menu");
+                        return;
+                    } else if (selectedItem == 3) {
                         isRunning = false;
                     }
                 }
@@ -67,18 +77,29 @@ void GameScreen::showMainMenu(SDL_Renderer* renderer, bool &isRunning) {
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, backgroundTexture, nullptr, nullptr);
 
+        SDL_Color gray = {128, 128, 128, 255};
         SDL_Color yellow = {255, 223, 0, 255};
         SDL_Color orange = {255, 165, 0, 255};
 
-        renderText("Play", 350, 450, (selectedItem == 1) ? yellow : orange);
-        renderText("Exit", 350, 500, (selectedItem == 2) ? yellow : orange);
+        //renderText("Continue", 350, 400, (selectedItem == 0) ? (saveExists ? yellow : gray) : (saveExists ? orange : gray));
+        renderText("1 Player", 350, 450, (selectedItem == 1) ? yellow : orange);
+        renderText("2 Player", 350, 500, (selectedItem == 2) ? yellow : orange);
+        renderText("Exit", 350, 550, (selectedItem == 3) ? yellow : orange);
 
-        SDL_Rect pointerRect = {300, (selectedItem == 1) ? 460 : 510, 32, 32};
+        SDL_Rect pointerRect = {300, 0, 32, 32};
+
+        if (selectedItem == 1)
+            pointerRect.y = 460;
+        else if (selectedItem == 2)
+            pointerRect.y = 510;
+        else if (selectedItem == 3)
+            pointerRect.y = 560;
+
         SDL_RenderCopy(renderer, pointerTexture, nullptr, &pointerRect);
 
         SDL_RenderPresent(renderer);
+        SDL_Delay(16);
     }
-
     SDL_DestroyTexture(backgroundTexture);
     SDL_DestroyTexture(pointerTexture);
     TTF_CloseFont(font);
@@ -109,20 +130,29 @@ void GameScreen::showPauseGame(SDL_Renderer* renderer){
 
     font = TTF_OpenFont("ttf/ARCADECLASSIC.ttf", 36);
     renderText("Press  P  to  continue!", 130, 300, yellow);
+    renderText("Press  O  to  game  over!", 130, 330, yellow);
+    renderText("Press  M  to  back  main menu!", 130, 360, yellow);
 
     font = TTF_OpenFont("ttf/ARCADECLASSIC.ttf", 48);
 }
 
-void GameScreen::figures(int lives, int score) {
+void GameScreen::figures(int P1_lives, int P2_lives, int score, int remainingEnemies, bool isTwoPlayerMode) {
     SDL_Color orange = {255, 165, 0, 255};
 
     font = TTF_OpenFont("ttf/ARCADECLASSIC.ttf", 24);
 
-    std::string livesText = "LIVES  " + to_string(lives);
+    string livesText = "P1  LIVES    " + to_string(P1_lives);
     renderText(livesText, SCREEN_WIDTH + 20, 400, orange);
+    if(isTwoPlayerMode){
+        string livesText = "P2  LIVES    " + to_string(P2_lives);
+        renderText(livesText, SCREEN_WIDTH + 20, 450, orange);
+    }
+    string scoreText = "SCORE    " + to_string(score);
+    renderText(scoreText, SCREEN_WIDTH + 20, 500, orange);
 
-    std::string scoreText = "SCORE  " + to_string(score);
-    renderText(scoreText, SCREEN_WIDTH + 20, 450, orange);
+    string remainingEnemiesText = "REMAINING    " + to_string(remainingEnemies);
+    renderText(remainingEnemiesText, SCREEN_WIDTH + 20, 200, orange);
+
 
     font = TTF_OpenFont("ttf/ARCADECLASSIC.ttf", 48);
 }

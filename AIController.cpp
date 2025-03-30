@@ -4,8 +4,9 @@
 AIController::AIController(EnemyTank* enemy,
                            const std::vector<Wall*>* walls,
                            const std::vector<EnemyTank*>* enemyList,
-                           PlayerTank* player)
-    : controlledEnemy(enemy), walls(walls), enemyList(enemyList), player(player)
+                           PlayerTank* player,
+                           PlayerTank* player2)
+    : controlledEnemy(enemy), walls(walls), enemyList(enemyList), player(player), player2(player2)
 {
     lastDirectionChange = SDL_GetTicks();
     lastSideChange = SDL_GetTicks();
@@ -146,6 +147,10 @@ bool AIController::CanMove(int x, int y) {
     /// Kiểm tra va chạm với người chơi
     if (player) {
         if (SDL_HasIntersection(&newRect, &player->rect))
+            return false;
+    }
+    if (player2) {
+        if (SDL_HasIntersection(&newRect, &player2->rect))
             return false;
     }
     return true;

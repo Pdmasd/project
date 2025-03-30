@@ -10,6 +10,7 @@
 #include <vector>
 #include <cstdlib>
 #include <string>
+#include <fstream>
 
 using namespace std;
 
@@ -18,14 +19,14 @@ const int SCREEN_HEIGHT = 600;
 const int FULL_SCREEN_WIDTH = 800;
 const int FULL_SCREEN_HEIGHT = 600;
 const int TILE_SIZE = 40;
-const int HIT_BOX = 36;
+const int HIT_BOX = 35;
 
-const float MOVE_SPEED = 2.5;
+const float MOVE_SPEED = 3;
 const float BULLET_SPEED = 3;
-const int ENEMY_SHOOT_CHANGE = 5;     ///(%)
+const int ENEMY_SHOOT_CHANGE = 8;     ///(%)
 
-const int MAP_WIDTH = SCREEN_WIDTH / TILE_SIZE;
-const int MAP_HEIGHT = SCREEN_HEIGHT / TILE_SIZE;
+const int MAP_WIDTH = SCREEN_WIDTH / TILE_SIZE;     ///=15
+const int MAP_HEIGHT = SCREEN_HEIGHT / TILE_SIZE;   ///=15
 
 inline const char * WINDOW_TITLE = "Battle City Remake";
 

@@ -14,6 +14,7 @@ public:
     void reset();
 
     int getScore() const;
+    void setScore(int s) { score = s; }
 };
 
 #endif // SCOREMANAGER_H

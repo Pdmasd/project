@@ -3,9 +3,9 @@
 #include <cstdlib> // Cho rand()
 
 EnemySpawner::EnemySpawner(SDL_Texture* enemyTexture,
-                           std::vector<EnemyTank*>& enemies,
-                           std::vector<AIController*>& aiControllers,
-                           const std::vector<Wall*>* walls,
+                           vector<EnemyTank*>& enemies,
+                           vector<AIController*>& aiControllers,
+                           const vector<Wall*>* walls,
                            int playerX, int playerY,
                            int baseX, int baseY,
                            PlayerTank* player)
@@ -21,15 +21,15 @@ void EnemySpawner::spawnEnemies(int maxEnemies, int spawnInterval) {
     static Uint32 lastSpawnTime = 0;
     Uint32 currentTime = SDL_GetTicks();
 
-    // Nếu số lượng enemy đã đạt giới hạn hoặc chưa đủ thời gian spawn thì thoát
-    if (enemies.size() >= static_cast<size_t>(maxEnemies) ||
+    /// Nếu số lượng enemy đã đạt giới hạn hoặc chưa đủ thời gian spawn thì thoát
+    if (enemySpawned >= static_cast<size_t>(maxEnemies) ||
         currentTime - lastSpawnTime < static_cast<Uint32>(spawnInterval)) {
         return;
     }
 
     int spawnX = 0, spawnY = 0;
     if (findValidSpawnPosition(spawnX, spawnY)) {
-        // Tạo enemy mới tại vị trí spawn hợp lệ
+        /// Tạo enemy mới tại vị trí spawn hợp lệ
         EnemyTank* newEnemy = new EnemyTank(spawnX, spawnY, enemyTexture);
         newEnemy->active = true;
         enemies.push_back(newEnemy);
@@ -37,6 +37,7 @@ void EnemySpawner::spawnEnemies(int maxEnemies, int spawnInterval) {
         aiControllers.push_back(new AIController(newEnemy, walls, &enemies, player));
         lastSpawnTime = currentTime;
     }
+    enemySpawned++;
 }
 
 bool EnemySpawner::findValidSpawnPosition(int& outX, int& outY) {
@@ -49,7 +50,7 @@ bool EnemySpawner::findValidSpawnPosition(int& outX, int& outY) {
         SDL_Rect spawnRect = { spawnX, spawnY, TILE_SIZE, TILE_SIZE };
         bool valid = true;
 
-        // Kiểm tra va chạm với tường
+        /// Kiểm tra va chạm với tường
         for (const auto& wall : *walls) {
             if (wall->active && SDL_HasIntersection(&spawnRect, &wall->rect)) {
                 valid = false;
@@ -64,7 +65,7 @@ bool EnemySpawner::findValidSpawnPosition(int& outX, int& outY) {
             }
         }
 
-        // Nếu vị trí hợp lệ, trả về spawn position
+        /// Nếu vị trí hợp lệ, trả về spawn position
         if (valid) {
             outX = spawnX;
             outY = spawnY;
