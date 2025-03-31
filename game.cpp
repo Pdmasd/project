@@ -88,9 +88,11 @@ Game::~Game() {
     for (auto enemy : enemies) {
         delete enemy;
     }
+    enemies.clear();
     for (auto ai : aiControllers) {
         delete ai;
     }
+    aiControllers.clear();
 
     if (player2 != nullptr) {
         delete player2;
@@ -182,12 +184,14 @@ void Game::handleEvents() {
                     pause = false;
                 else if(!pause)
                     pause = true;
+                break;
             } else if(event.key.keysym.sym == SDLK_o){
                 if(pause){
                     pause = false;
                     resetGame();
                     game_over = true;
                 }
+                break;
             }  else if(event.key.keysym.sym == SDLK_m){
                 if(pause){
                     pause = false;
@@ -195,6 +199,7 @@ void Game::handleEvents() {
                     GameScreen screen(renderer);
                     screen.showMainMenu(renderer, running, isTwoPlayerMode);
                 }
+                break;
             }
         }
     }
@@ -273,88 +278,7 @@ void Game::update() {
     Uint32 deltaTime = currentTime - lastTime;
     lastTime = currentTime;
 
-
-
-    ///Đạn player bắn trúng tường
-    for (auto& bullet : player.bullets) {
-        for (auto& wall : walls) {
-            if (wall->active && SDL_HasIntersection(&bullet.rect, &wall->rect)) {
-                if (wall->type == WallType::BRICK) {
-                    wall->hit();
-                    bullet.active = false;
-
-                    Explosion* exp = new Explosion(enemyTexture, wall->rect.x, wall->rect.y, 2);
-                    explosionList.push_back(exp);
-
-                    SoundManager::loadSound("explosion", "sound/explosion.wav");
-                    SoundManager::playSound("explosion", 0);
-
-                    int groupBaseX = (wall->x / TILE_SIZE) * TILE_SIZE;
-                    int groupBaseY = (wall->y / TILE_SIZE) * TILE_SIZE;
-                    int smallSize = TILE_SIZE / 4;
-
-                    /// Xác định vị trí của brick bị trúng
-                    int hitRow = (wall->y - groupBaseY) / smallSize;
-                    int hitCol = (wall->x - groupBaseX) / smallSize;
-
-                    /// Nếu đạn được bắn theo chiều dọc
-                    if (bullet.dx == 0 && bullet.dy != 0) {
-                        for (auto &otherBrick : walls) {
-                            if (!otherBrick->active)
-                                continue;
-
-                            if (otherBrick->x >= groupBaseX && otherBrick->x < groupBaseX + TILE_SIZE &&
-                                otherBrick->y >= groupBaseY && otherBrick->y < groupBaseY + TILE_SIZE) {
-                                int row = (otherBrick->y - groupBaseY) / smallSize;
-                                int col = (otherBrick->x - groupBaseX) / smallSize;
-
-                                if (row == hitRow && abs(col - hitCol) <= 2) {
-                                    otherBrick->hit();
-                                }
-                            }
-                        }
-                    }
-                    /// Nếu đạn bắn theo chiều ngang
-                    else if (bullet.dy == 0 && bullet.dx != 0) {
-                        for (auto &otherBrick : walls) {
-                            if (!otherBrick->active)
-                                continue;
-                            if (otherBrick->x >= groupBaseX && otherBrick->x < groupBaseX + TILE_SIZE &&
-                                otherBrick->y >= groupBaseY && otherBrick->y < groupBaseY + TILE_SIZE) {
-                                int row = (otherBrick->y - groupBaseY) / smallSize;
-                                int col = (otherBrick->x - groupBaseX) / smallSize;
-
-                                if (col == hitCol && abs(row - hitRow) <= 2) {
-                                    otherBrick->hit();
-                                }
-                            }
-                        }
-                    }
-                } else if (wall->type == WallType::STEEL) {
-                    bullet.active = false;
-                }
-                break;
-            }
-        }
-    }
-
-    ///Đạn player bắn trúng enemy
-    for (auto& bullet : player.bullets) {
-        for (auto& enemy : enemies) {
-            if (enemy->active && SDL_HasIntersection(&bullet.rect, &enemy->rect)) {
-                enemy->active = false;
-                bullet.active = false;
-
-                score.addPoints(100);
-
-                Explosion* exp = new Explosion(enemyTexture, enemy->rect.x, enemy->rect.y, 1);
-                explosionList.push_back(exp);
-
-                SoundManager::loadSound("explosion", "sound/explosion.wav");
-                SoundManager::playSound("explosion", 0);
-            }
-        }
-    }
+    SoundManager::loadSound("explosion", "sound/explosion.wav");
 
     if (currentLevel == 3) {
         enemySpawner->spawnEnemies(enemyCount3, 2500);
@@ -369,69 +293,6 @@ void Game::update() {
         ai->Update();
     }
 
-    ///Đạn enemy bắn trúng tường
-    for (auto& enemy : enemies) {
-        for (auto& bullet : enemy->bullets) {
-            for (auto& wall : walls) {
-                if (wall->active && SDL_HasIntersection(&bullet.rect, &wall->rect)) {
-                    if (wall->type == WallType::BRICK) {
-                        wall->hit();
-                        bullet.active = false;
-
-                        Explosion* exp = new Explosion(enemyTexture, wall->rect.x, wall->rect.y, 2);
-                        explosionList.push_back(exp);
-
-                        SoundManager::loadSound("explosion", "sound/explosion.wav");
-                        SoundManager::playSound("explosion", 0);
-
-                        int groupBaseX = (wall->x / TILE_SIZE) * TILE_SIZE;
-                        int groupBaseY = (wall->y / TILE_SIZE) * TILE_SIZE;
-                        int smallSize = TILE_SIZE / 4;
-
-                        int hitRow = (wall->y - groupBaseY) / smallSize;
-                        int hitCol = (wall->x - groupBaseX) / smallSize;
-
-                        if (bullet.dx == 0 && bullet.dy != 0) {
-                            for (auto &otherBrick : walls) {
-                                if (!otherBrick->active)
-                                    continue;
-
-                                if (otherBrick->x >= groupBaseX && otherBrick->x < groupBaseX + TILE_SIZE &&
-                                    otherBrick->y >= groupBaseY && otherBrick->y < groupBaseY + TILE_SIZE) {
-                                    int row = (otherBrick->y - groupBaseY) / smallSize;
-                                    int col = (otherBrick->x - groupBaseX) / smallSize;
-
-                                    if (row == hitRow && abs(col - hitCol) <= 2) {
-                                        otherBrick->hit();
-                                    }
-                                }
-                            }
-                        }
-
-                        else if (bullet.dy == 0 && bullet.dx != 0) {
-                            for (auto &otherBrick : walls) {
-                                if (!otherBrick->active)
-                                    continue;
-                                if (otherBrick->x >= groupBaseX && otherBrick->x < groupBaseX + TILE_SIZE &&
-                                    otherBrick->y >= groupBaseY && otherBrick->y < groupBaseY + TILE_SIZE) {
-                                    int row = (otherBrick->y - groupBaseY) / smallSize;
-                                    int col = (otherBrick->x - groupBaseX) / smallSize;
-
-                                    if (col == hitCol && abs(row - hitRow) <= 2) {
-                                        otherBrick->hit();
-                                    }
-                                }
-                            }
-                        }
-                    } else if (wall->type == WallType::STEEL) {
-                        bullet.active = false;
-                    }
-                    break;
-                }
-            }
-        }
-    }
-
     enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
                         [](EnemyTank* e) { return !e->active; }), enemies.end());
 
@@ -442,12 +303,10 @@ void Game::update() {
             if (SDL_HasIntersection(&bullet.rect, &player.rect)) {
                 bullet.active = false;
                 player.die();
-                player.lives--;
 
                 Explosion* exp = new Explosion(enemyTexture, player.x, player.y, 0);
                 explosionList.push_back(exp);
 
-                SoundManager::loadSound("explosion", "sound/explosion.wav");
                 SoundManager::playSound("explosion", 0);
 
                 if(!isTwoPlayerMode){
@@ -477,11 +336,31 @@ void Game::update() {
         }
     }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// Player 2
+    /// Đạn enemy bắn trúng Player 2
     if (isTwoPlayerMode && player2 != nullptr) {
+        for (auto& enemy : enemies) {
+            for (auto& bullet : enemy->bullets) {
+                if (SDL_HasIntersection(&bullet.rect, &player2->rect)) {
+                    bullet.active = false;
+                    player2->die();
 
-        for (auto& bullet : player2->bullets) {
+                    Explosion* exp = new Explosion(enemyTexture, player2->x, player2->y, 0);
+                    explosionList.push_back(exp);
+
+                    SoundManager::playSound("explosion", 0);
+
+                    if (!player.alive && !player2->alive && player.lives == 0 && player2->lives == 0) {
+                        game_over = true;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    ///Kiểm tra va chạm đạn với tường
+    auto handleBulletWallCollision = [&](std::vector<Bullet>& bullets) {
+        for (auto& bullet : bullets) {
             for (auto& wall : walls) {
                 if (wall->active && SDL_HasIntersection(&bullet.rect, &wall->rect)) {
                     if (wall->type == WallType::BRICK) {
@@ -542,69 +421,50 @@ void Game::update() {
                 }
             }
         }
-
-        for (auto& bullet : player2->bullets) {
+    };
+    ///Kiểm tra va chạm đạn với enemy
+    auto handleBulletEnemyCollision = [&](std::vector<Bullet>& bullets, int scoreValue) {
+        for (auto& bullet : bullets) {
             for (auto& enemy : enemies) {
                 if (enemy->active && SDL_HasIntersection(&bullet.rect, &enemy->rect)) {
                     enemy->active = false;
                     bullet.active = false;
 
-                    score.addPoints(100);
-
-                    Explosion* exp = new Explosion(enemyTexture, enemy->rect.x, enemy->rect.y, 1);
-                    explosionList.push_back(exp);
-
-                    SoundManager::loadSound("explosion", "sound/explosion.wav");
+                    score.addPoints(scoreValue);
+                    explosionList.push_back(new Explosion(enemyTexture, enemy->rect.x, enemy->rect.y, 1));
                     SoundManager::playSound("explosion", 0);
                 }
             }
         }
+    };
 
-        for (auto& enemy : enemies) {
-            for (auto& bullet : enemy->bullets) {
-                if (SDL_HasIntersection(&bullet.rect, &player2->rect)) {
-                    bullet.active = false;
-                    player2->die();
-                    player2->lives--;
-
-                    Explosion* exp = new Explosion(enemyTexture, player2->x, player2->y, 0);
-                    explosionList.push_back(exp);
-
-                    SoundManager::loadSound("explosion", "sound/explosion.wav");
-                    SoundManager::playSound("explosion", 0);
-
-                    if (!player.alive && !player2->alive && player.lives == 0 && player2->lives == 0) {
-                        game_over = true;
-                        return;
-                    }
-                }
-            }
-        }
-        for (auto& bullet : player2->bullets) {
-            if (bullet.active && SDL_HasIntersection(&bullet.rect, &base->rect)) {
-                base->destroy();
-                game_over = true;
-                return;
-            }
-        }
-    }
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///Kiểm tra nhà chính bị hủy chưa
+    handleBulletWallCollision(player.bullets);
+    handleBulletEnemyCollision(player.bullets, 100);
     for (auto& enemy : enemies) {
-        for (auto& bullet : enemy->bullets) {
+        handleBulletWallCollision(enemy->bullets);
+    }
+    if (isTwoPlayerMode && player2 != nullptr) {
+        handleBulletWallCollision(player2->bullets);
+        handleBulletEnemyCollision(player2->bullets, 100);
+    }
+
+    ///Kiểm tra nhà chính
+    auto checkBaseHit = [&](std::vector<Bullet>& bullets) {
+        for (auto& bullet : bullets) {
             if (bullet.active && SDL_HasIntersection(&bullet.rect, &base->rect)) {
                 base->destroy();
                 game_over = true;
                 return;
             }
         }
+    };
+
+    checkBaseHit(player.bullets);
+    for (auto& enemy : enemies) {
+        checkBaseHit(enemy->bullets);
     }
-    for (auto& bullet : player.bullets) {
-        if (bullet.active && SDL_HasIntersection(&bullet.rect, &base->rect)) {
-            base->destroy();
-            game_over = true;
-            return;
-        }
+    if (isTwoPlayerMode && player2 != nullptr) {
+        checkBaseHit(player2->bullets);
     }
 
     ///Update Explosion
@@ -657,32 +517,48 @@ void Game::render() {
     else if(currentLevel == 2) enemyCount = enemyCount2;
     else if(currentLevel == 3) enemyCount = enemyCount3;
 
-    //int player2Lives = (isTwoPlayerMode && player2 != nullptr) ? player2->lives : player2->MAX_LIVES;
-    int player2Lives = player2->lives;
+    int player2Lives = (isTwoPlayerMode && player2 != nullptr) ? player2->lives : MAX_LIVES;
+
     screen.figures(player.lives, player2Lives, score.getScore(), enemyCount - enemySpawner->getSpawnedCount(), isTwoPlayerMode);
 
     SDL_RenderPresent(renderer);
 }
 
+bool P2_spawned = true;
+
 void Game::run() {
+    bool introStage1 = false;
     static bool waitingForTransition = false;
     static Uint32 transitionStartTime = 0;
+    GameScreen screen(renderer);
 
     while (running) {
-            handleEvents();
+        if(P2_spawned){
+            if (isTwoPlayerMode) {
+                player2 = new PlayerTank(10 * TILE_SIZE, 13 * TILE_SIZE, renderer);
+                player2->initPlayer2Animations(player2->texture);
+                P2_spawned = false;
+            } else {
+                player2 = nullptr;
+                P2_spawned = false;
+            }
+        }
+        handleEvents();
 
         if(!pause && !game_over){
             update();
             render();
         }
-
-        if (currentLevel == 1 && enemySpawner->getSpawnedCount() >= enemyCount1 && enemies.empty()) {
+        if(introStage1){
+             screen.showStageIntro(renderer, 1);
+             introStage1 = false;
+        }else if (currentLevel == 1 && enemySpawner->getSpawnedCount() >= enemyCount1 && enemies.empty()) {
             if (!waitingForTransition) {
                 waitingForTransition = true;
                 transitionStartTime = SDL_GetTicks();
             } else if (SDL_GetTicks() - transitionStartTime >= 4000) {
-                GameScreen screen1(renderer);
-                screen1.showStageIntro(renderer, 2);
+
+                screen.showStageIntro(renderer, 2);
 
                 currentLevel = 2;
                 resetGame();
@@ -694,8 +570,8 @@ void Game::run() {
                 waitingForTransition = true;
                 transitionStartTime = SDL_GetTicks();
             } else if (SDL_GetTicks() - transitionStartTime >= 4000) {
-                GameScreen screen1(renderer);
-                screen1.showStageIntro(renderer, 3);
+
+                screen.showStageIntro(renderer, 3);
 
                 currentLevel = 3;
                 resetGame();
@@ -712,6 +588,8 @@ void Game::run() {
             if (backToMenu) {
                 resetGame();
                 screen.showMainMenu(renderer, running, isTwoPlayerMode);
+                introStage1 = true;
+
             } else {
                 running = false;
             }
@@ -750,8 +628,10 @@ void Game::resetGame() {
     }
 
     player.respawn();
-    if (isTwoPlayerMode && player2 != nullptr) {
+    player.lives++;
+    if (isTwoPlayerMode) {
         player2->respawn();
+        player2->lives++;
     }
 
     if (base != nullptr) {
@@ -768,11 +648,12 @@ void Game::resetGame() {
         currentLevel = 1;
         score.reset();
         player.lives = MAX_LIVES;
-        if (isTwoPlayerMode && player2 != nullptr) {
+        if (isTwoPlayerMode) {
             player2->lives = MAX_LIVES;
         }
     }
 
+    P2_spawned = true;
     game_over = false;
     pause = false;
 }

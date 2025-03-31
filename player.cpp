@@ -117,6 +117,7 @@ void PlayerTank::die() {
 
 void PlayerTank::respawn() {
     if (lives > 0) {
+        lives--;
         x = initialX;
         y = initialY;
         rect.x = x;
