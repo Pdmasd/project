@@ -111,4 +111,3 @@ void EnemyTank::render(SDL_Renderer* renderer) {
         bullet.render(renderer);
     }
 }
-

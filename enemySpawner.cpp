@@ -8,16 +8,10 @@ EnemySpawner::EnemySpawner(SDL_Texture* enemyTexture,
                            const vector<Wall*>* walls,
                            int playerX, int playerY,
                            int baseX, int baseY,
-                           PlayerTank* player,
-                           PlayerTank* player2)
+                           PlayerTank* player)
     : enemyTexture(enemyTexture), enemies(enemies), aiControllers(aiControllers),
-      walls(walls), playerX(playerX), playerY(playerY), player(player),
-      player2X(0), player2Y(0), player2(player2)
+      walls(walls), playerX(playerX), playerY(playerY), baseX(baseX), baseY(baseY), player(player)
 {
-    if (player2) {
-        player2X = player2->x;
-        player2Y = player2->y;
-    }
     if (!enemyTexture) {
         std::cerr << "enemyTexture không hợp lệ!" << std::endl;
     }
@@ -35,13 +29,12 @@ void EnemySpawner::spawnEnemies(int maxEnemies, int spawnInterval) {
 
     int spawnX = 0, spawnY = 0;
     if (findValidSpawnPosition(spawnX, spawnY)) {
-
         /// Tạo enemy mới tại vị trí spawn hợp lệ
         EnemyTank* newEnemy = new EnemyTank(spawnX, spawnY, enemyTexture);
         newEnemy->active = true;
         enemies.push_back(newEnemy);
 
-        aiControllers.push_back(new AIController(newEnemy, walls, &enemies, player, player2));
+        aiControllers.push_back(new AIController(newEnemy, walls, &enemies, player));
         lastSpawnTime = currentTime;
     }
     enemySpawned++;
@@ -52,7 +45,7 @@ bool EnemySpawner::findValidSpawnPosition(int& outX, int& outY) {
 
     for (int attempt = 0; attempt < maxAttempts; ++attempt) {
         int spawnX = (rand() % (SCREEN_WIDTH / TILE_SIZE - 2) + 1) * TILE_SIZE;
-        int spawnY = TILE_SIZE;               ///Hàng đầu tiên
+        int spawnY = TILE_SIZE;
 
         SDL_Rect spawnRect = { spawnX, spawnY, TILE_SIZE, TILE_SIZE };
         bool valid = true;
@@ -70,16 +63,6 @@ bool EnemySpawner::findValidSpawnPosition(int& outX, int& outY) {
                 valid = false;
                 break;
             }
-        }
-
-        /// Kiểm tra va chạm với player1
-        if (player && SDL_HasIntersection(&spawnRect, &player->rect)) {
-            valid = false;
-        }
-
-        /// Kiểm tra va chạm với player2 (nếu có)
-        if (player2 && SDL_HasIntersection(&spawnRect, &player2->rect)) {
-            valid = false;
         }
 
         /// Nếu vị trí hợp lệ, trả về spawn position

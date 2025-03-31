@@ -413,7 +413,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1743360907 c:\users\mac\onedrive\desktop\c++\gameproject\defs.h
+1743436761 c:\users\mac\onedrive\desktop\c++\gameproject\defs.h
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_ttf.h>
@@ -423,12 +423,12 @@
 	<string>
 	<fstream>
 
-1743397357 source:c:\users\mac\onedrive\desktop\c++\gameproject\player.cpp
+1743436544 source:c:\users\mac\onedrive\desktop\c++\gameproject\player.cpp
 	"player.h"
 	"enemy.h"
 	"SoundManager.h"
 
-1743396487 c:\users\mac\onedrive\desktop\c++\gameproject\player.h
+1743436761 c:\users\mac\onedrive\desktop\c++\gameproject\player.h
 	"defs.h"
 	"wall.h"
 	"bullet.h"
@@ -457,34 +457,34 @@
 1742401804 c:\users\mac\onedrive\desktop\c++\gameproject\fallingobject.h
 	"gameObject.h"
 
-1743184234 source:c:\users\mac\onedrive\desktop\c++\gameproject\animation.cpp
+1743436244 source:c:\users\mac\onedrive\desktop\c++\gameproject\animation.cpp
 	"animation.h"
 
-1743185789 c:\users\mac\onedrive\desktop\c++\gameproject\animation.h
+1743436244 c:\users\mac\onedrive\desktop\c++\gameproject\animation.h
 	<SDL.h>
 	"defs.h"
 
-1743122078 source:c:\users\mac\onedrive\desktop\c++\gameproject\wall.cpp
+1743436544 source:c:\users\mac\onedrive\desktop\c++\gameproject\wall.cpp
 	"wall.h"
 
 1743099699 c:\users\mac\onedrive\desktop\c++\gameproject\wall.h
 	<SDL.h>
 	"defs.h"
 
-1743230866 source:c:\users\mac\onedrive\desktop\c++\gameproject\bullet.cpp
+1743436245 source:c:\users\mac\onedrive\desktop\c++\gameproject\bullet.cpp
 	"bullet.h"
 
-1743120608 c:\users\mac\onedrive\desktop\c++\gameproject\bullet.h
+1743436244 c:\users\mac\onedrive\desktop\c++\gameproject\bullet.h
 	<SDL.h>
 	"defs.h"
 	"wall.h"
 
-1743344383 source:c:\users\mac\onedrive\desktop\c++\gameproject\enemy.cpp
+1743436245 source:c:\users\mac\onedrive\desktop\c++\gameproject\enemy.cpp
 	"enemy.h"
 	"player.h"
 	"SoundManager.h"
 
-1743120506 c:\users\mac\onedrive\desktop\c++\gameproject\enemy.h
+1743436245 c:\users\mac\onedrive\desktop\c++\gameproject\enemy.h
 	"defs.h"
 	"wall.h"
 	"bullet.h"
@@ -492,10 +492,10 @@
 	"wall.h"
 	<algorithm>
 
-1743398898 source:c:\users\mac\onedrive\desktop\c++\gameproject\game.cpp
+1743441101 source:c:\users\mac\onedrive\desktop\c++\gameproject\game.cpp
 	"game.h"
 
-1743358916 c:\users\mac\onedrive\desktop\c++\gameproject\game.h
+1743436760 c:\users\mac\onedrive\desktop\c++\gameproject\game.h
 	<SDL.h>
 	"defs.h"
 	"wall.h"
@@ -515,10 +515,10 @@
 	"begin_code.h"
 	"close_code.h"
 
-1743391559 source:c:\users\mac\onedrive\desktop\c++\gameproject\game_screen.cpp
+1743436878 source:c:\users\mac\onedrive\desktop\c++\gameproject\game_screen.cpp
 	"game_screen.h"
 
-1743390081 c:\users\mac\onedrive\desktop\c++\gameproject\game_screen.h
+1743436544 c:\users\mac\onedrive\desktop\c++\gameproject\game_screen.h
 	"defs.h"
 	"SoundManager.h"
 	"player.h"
@@ -537,23 +537,23 @@
 	<vector>
 	<algorithm>
 
-1743394445 source:c:\users\mac\onedrive\desktop\c++\gameproject\enemyspawner.cpp
+1743439858 source:c:\users\mac\onedrive\desktop\c++\gameproject\enemyspawner.cpp
 	"EnemySpawner.h"
 	"AIController.h"
 	<cstdlib>
 
-1743394174 c:\users\mac\onedrive\desktop\c++\gameproject\enemyspawner.h
+1743439858 c:\users\mac\onedrive\desktop\c++\gameproject\enemyspawner.h
 	"player.h"
 	"Enemy.h"
 	"AIController.h"
 	"Wall.h"
 	"defs.h"
 
-1743398953 source:c:\users\mac\onedrive\desktop\c++\gameproject\aicontroller.cpp
+1743436244 source:c:\users\mac\onedrive\desktop\c++\gameproject\aicontroller.cpp
 	"AIController.h"
 	<cstdlib>
 
-1743398702 c:\users\mac\onedrive\desktop\c++\gameproject\aicontroller.h
+1743436245 c:\users\mac\onedrive\desktop\c++\gameproject\aicontroller.h
 	"player.h"
 	"Enemy.h"
 	"Wall.h"
@@ -561,7 +561,7 @@
 
 1743311312 c:\users\mac\onedrive\desktop\c++\gameproject\scoremanager.h
 
-1743343858 source:c:\users\mac\onedrive\desktop\c++\gameproject\scoremanager.cpp
+1743436544 source:c:\users\mac\onedrive\desktop\c++\gameproject\scoremanager.cpp
 	"ScoreManager.h"
 
 1743232499 source:c:\users\mac\onedrive\desktop\c++\gameproject\explosion.cpp
@@ -584,7 +584,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1743244107 source:c:\users\mac\onedrive\desktop\c++\gameproject\soundmanager.cpp
+1743436544 source:c:\users\mac\onedrive\desktop\c++\gameproject\soundmanager.cpp
 	"SoundManager.h"
 	"defs.h"
 

@@ -37,4 +37,3 @@ private:
 };
 
 #endif // GAME_SCREEN_H
-
