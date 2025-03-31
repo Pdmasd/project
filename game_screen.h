@@ -16,6 +16,7 @@ public:
 
     void showMainMenu(SDL_Renderer* renderer, bool& running, bool &isTwoPlayerMode);
     void showGameOver(SDL_Renderer* renderer, int score, bool& backToMenu);
+    void showVictory(SDL_Renderer* renderer, int score, bool& backToMenu);
     void showStageIntro(SDL_Renderer* renderer, int stageNumber);
     void showPauseGame(SDL_Renderer* renderer);
     void figures(int P1_lives, int P2_lives, int score, int remainingEnemies, bool isTwoPlayerMode);

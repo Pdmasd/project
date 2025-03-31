@@ -80,6 +80,7 @@ void GameScreen::showMainMenu(SDL_Renderer* renderer, bool &isRunning, bool &isT
         //SDL_Color gray = {128, 128, 128, 255};
         SDL_Color yellow = {255, 223, 0, 255};
         SDL_Color orange = {255, 165, 0, 255};
+        font = TTF_OpenFont("ttf/ARCADECLASSIC.ttf", 48);
 
         //renderText("Continue", 350, 400, (selectedItem == 0) ? (saveExists ? yellow : gray) : (saveExists ? orange : gray));
         renderText("1  Player", 300, 450, (selectedItem == 1) ? yellow : orange);
@@ -114,6 +115,8 @@ void GameScreen::showStageIntro(SDL_Renderer* renderer, int stageNumber) {
     SDL_RenderClear(renderer);
 
     SDL_Color yellow = {255, 255, 0, 255};
+    font = TTF_OpenFont("ttf/ARCADECLASSIC.ttf", 48);
+
     string stageText = "Stage " + to_string(stageNumber);
 
     renderText(stageText, 300, 250, yellow);
@@ -125,6 +128,7 @@ void GameScreen::showStageIntro(SDL_Renderer* renderer, int stageNumber) {
 void GameScreen::showPauseGame(SDL_Renderer* renderer){
     SDL_Color red = {255, 0, 0, 255};
     SDL_Color yellow = {255, 223, 0, 255};
+    font = TTF_OpenFont("ttf/ARCADECLASSIC.ttf", 48);
 
     renderText("GAME  PAUSED", 160, 250, red);
 
@@ -132,8 +136,6 @@ void GameScreen::showPauseGame(SDL_Renderer* renderer){
     renderText("Press  P  to  continue!", 130, 300, yellow);
     renderText("Press  O  to  game  over!", 130, 330, yellow);
     renderText("Press  M  to  back  main menu!", 130, 360, yellow);
-
-    font = TTF_OpenFont("ttf/ARCADECLASSIC.ttf", 48);
 }
 
 void GameScreen::figures(int P1_lives, int P2_lives, int score, int remainingEnemies, bool isTwoPlayerMode) {
@@ -152,13 +154,14 @@ void GameScreen::figures(int P1_lives, int P2_lives, int score, int remainingEne
 
     string remainingEnemiesText = "REMAINING    " + to_string(remainingEnemies);
     renderText(remainingEnemiesText, SCREEN_WIDTH + 20, 200, orange);
-
-
-    font = TTF_OpenFont("ttf/ARCADECLASSIC.ttf", 48);
 }
 
 void GameScreen::showGameOver(SDL_Renderer* renderer, int score, bool& backToMenu) {
     SDL_Texture* gameOverTexture = IMG_LoadTexture(renderer, "image/gameover.png");
+    if (!gameOverTexture) {
+        SDL_Log("Failed to load gameover texture: %s", IMG_GetError());
+        return;
+    }
 
     SoundManager::loadSound("gameover", "sound/gameover.mp3");
     SoundManager::playSound("gameover", 0);
@@ -182,6 +185,7 @@ void GameScreen::showGameOver(SDL_Renderer* renderer, int score, bool& backToMen
     if (showScore) {
         SDL_Color yellow = {255, 223, 0, 255};
         SDL_Color orange = {255, 165, 0, 255};
+        font = TTF_OpenFont("ttf/ARCADECLASSIC.ttf", 48);
 
         string scoreText = "SCORE   " + to_string(score);
         renderText(scoreText, 250, 450, yellow);
@@ -189,7 +193,6 @@ void GameScreen::showGameOver(SDL_Renderer* renderer, int score, bool& backToMen
         font = TTF_OpenFont("ttf/ARCADECLASSIC.ttf", 36);
         renderText("Press  Enter  to  back  mainmenu", 150, 500, orange);
 
-        font = TTF_OpenFont("ttf/ARCADECLASSIC.ttf", 48);
         SDL_RenderPresent(renderer);
     }
 
@@ -210,4 +213,62 @@ void GameScreen::showGameOver(SDL_Renderer* renderer, int score, bool& backToMen
         SDL_Delay(10);
     }
     SDL_DestroyTexture(gameOverTexture);
+}
+void GameScreen::showVictory(SDL_Renderer* renderer, int score, bool& backToMenu) {
+    SDL_Texture* victoryTexture = IMG_LoadTexture(renderer, "image/victory.png");
+    if (!victoryTexture) {
+        SDL_Log("Failed to load victory texture: %s", IMG_GetError());
+        return;
+    }
+
+    SoundManager::loadSound("victory", "sound/victory.mp3");
+    SoundManager::playSound("victory", 0);
+
+    /// Thiết lập vị trí bắt đầu
+    SDL_Rect destRect = {0, FULL_SCREEN_HEIGHT, FULL_SCREEN_WIDTH, FULL_SCREEN_HEIGHT};
+
+    bool showScore = false;
+    while (destRect.y > 0) {
+        SDL_RenderClear(renderer);
+
+        destRect.y -= 8;
+        SDL_RenderCopy(renderer, victoryTexture, nullptr, &destRect);
+
+        SDL_RenderPresent(renderer);
+        SDL_Delay(16);
+    }
+
+    showScore = true;
+
+    if (showScore) {
+        SDL_Color yellow = {255, 223, 0, 255};
+        SDL_Color orange = {255, 165, 0, 255};
+        font = TTF_OpenFont("ttf/ARCADECLASSIC.ttf", 48);
+
+        string scoreText = "SCORE   " + to_string(score + 95000);
+        renderText(scoreText, 250, 450, yellow);
+
+        font = TTF_OpenFont("ttf/ARCADECLASSIC.ttf", 36);
+        renderText("Press  Enter  to  back  mainmenu", 150, 500, orange);
+
+        SDL_RenderPresent(renderer);
+    }
+
+    bool waiting = true;
+    SDL_Event e;
+    while (waiting) {
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {
+                backToMenu = false;
+                waiting = false;
+            }
+            if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_RETURN) {
+
+                backToMenu = true;
+                waiting = false;
+            }
+        }
+        SDL_Delay(10);
+    }
+    SDL_DestroyTexture(victoryTexture);
 }

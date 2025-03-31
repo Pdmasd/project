@@ -15,7 +15,8 @@ public:
                  const vector<Wall*>* walls,
                  int playerX, int playerY,
                  int baseX, int baseY,
-                 PlayerTank* player);
+                 PlayerTank* player,
+                 PlayerTank* player2);
 
     void spawnEnemies(int maxEnemies, int spawnInterval);
     vector<EnemyTank*>& GetEnemies() { return enemies; }
@@ -32,11 +33,12 @@ private:
 
     int playerX;
     int playerY;
-    int baseX;
-    int baseY;
+    int player2X;
+    int player2Y;
 
     //int enemyCount = 0;
     PlayerTank* player;
+    PlayerTank* player2;
     bool findValidSpawnPosition(int& outX, int& outY);
 };
 

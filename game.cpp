@@ -30,7 +30,7 @@ Game::Game(): player(100, 100, nullptr){
     currentLevel = 1;
     enemyCount1 = 10;
     enemyCount2 = 15;
-    enemyCount3 = 100;
+    enemyCount3 = 25;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
@@ -50,6 +50,8 @@ Game::Game(): player(100, 100, nullptr){
     }
     ///Khởi tạo SDL_mixer
     SoundManager::init();
+
+    SoundManager::loadSound("explosion", "sound/explosion.wav");
 
     /// Hiển thị màn hình chờ
     GameScreen screen(renderer);
@@ -77,8 +79,9 @@ Game::Game(): player(100, 100, nullptr){
         player2 = nullptr;
     }
 
-    enemySpawner = new EnemySpawner(enemyTexture, enemies, aiControllers, &walls, player.x, player.y, base->x, base->y, &player);
-    enemySpawner->spawnEnemies(enemyCount1, 4000);
+    //enemySpawner = new EnemySpawner(enemyTexture, enemies, aiControllers, &walls, player.x, player.y, base->x, base->y, &player, (isTwoPlayerMode ? player2 : nullptr));
+    //enemySpawner->spawnEnemies(enemyCount1, 4000);
+
 }
 
 Game::~Game() {
@@ -247,8 +250,7 @@ void Game::handleEvents() {
             dy2 = -MOVE_SPEED;
         } else if (keyState[SDL_SCANCODE_S]) {
             dy2 = MOVE_SPEED;
-        }
-        if (keyState[SDL_SCANCODE_A]) {
+        } else if (keyState[SDL_SCANCODE_A]) {
             dx2 = -MOVE_SPEED;
         } else if (keyState[SDL_SCANCODE_D]) {
             dx2 = MOVE_SPEED;
@@ -273,12 +275,11 @@ void Game::update() {
         player2->updateStatus();
     }
 
+
     Uint32 currentTime = SDL_GetTicks();
     static Uint32 lastTime = currentTime; /// Khởi tạo lastTime tĩnh
     Uint32 deltaTime = currentTime - lastTime;
     lastTime = currentTime;
-
-    SoundManager::loadSound("explosion", "sound/explosion.wav");
 
     if (currentLevel == 3) {
         enemySpawner->spawnEnemies(enemyCount3, 2500);
@@ -324,8 +325,19 @@ void Game::update() {
         }
     }
 
-    ///Đạn player trúng đạn enemy
+    ///Đạn player 1 trúng đạn enemy
     for(auto& p_bullet : player.bullets){
+        for (auto& enemy : enemies) {
+            for (auto& e_bullet : enemy->bullets) {
+                if (SDL_HasIntersection(&p_bullet.rect, &e_bullet.rect)){
+                    p_bullet.active = false;
+                    e_bullet.active = false;
+                }
+            }
+        }
+    }
+    ///Đạn player 2 trúng đạn enemy
+    for(auto& p_bullet : player2->bullets){
         for (auto& enemy : enemies) {
             for (auto& e_bullet : enemy->bullets) {
                 if (SDL_HasIntersection(&p_bullet.rect, &e_bullet.rect)){
@@ -528,6 +540,8 @@ bool P2_spawned = true;
 
 void Game::run() {
     bool introStage1 = false;
+    bool backToMenu;
+
     static bool waitingForTransition = false;
     static Uint32 transitionStartTime = 0;
     GameScreen screen(renderer);
@@ -537,6 +551,8 @@ void Game::run() {
             if (isTwoPlayerMode) {
                 player2 = new PlayerTank(10 * TILE_SIZE, 13 * TILE_SIZE, renderer);
                 player2->initPlayer2Animations(player2->texture);
+
+                enemySpawner = new EnemySpawner(enemyTexture, enemies, aiControllers, &walls, player.x, player.y, base->x, base->y, &player, (isTwoPlayerMode ? player2 : nullptr));
                 P2_spawned = false;
             } else {
                 player2 = nullptr;
@@ -578,11 +594,31 @@ void Game::run() {
 
                 waitingForTransition = false;
             }
-        }
+        }   else if (currentLevel == 3 && enemySpawner->getSpawnedCount() >= enemyCount3 && enemies.empty()) {
+            if (!waitingForTransition) {
+                waitingForTransition = true;
+                transitionStartTime = SDL_GetTicks();
+            } else if (SDL_GetTicks() - transitionStartTime >= 4000) {
 
+                backToMenu = false;
+                screen.showVictory(renderer, score.getScore(), backToMenu);
+
+                if (backToMenu) {
+                    resetGame();
+                    screen.showMainMenu(renderer, running, isTwoPlayerMode);
+                    introStage1 = true;
+
+                } else {
+                    running = false;
+                }
+
+                resetGame();
+                waitingForTransition = false;
+            }
+        }
         if (game_over) {
-            GameScreen screen(renderer);
-            bool backToMenu = false;
+            //GameScreen screen(renderer);
+            backToMenu = false;
             screen.showGameOver(renderer, score.getScore(), backToMenu);
 
             if (backToMenu) {
@@ -642,7 +678,7 @@ void Game::resetGame() {
     if (enemySpawner != nullptr) {
         delete enemySpawner;
     }
-    enemySpawner = new EnemySpawner(enemyTexture, enemies, aiControllers, &walls, player.x, player.y, base->x, base->y, &player);
+    enemySpawner = new EnemySpawner(enemyTexture, enemies, aiControllers, &walls, player.x, player.y, base->x, base->y, &player, (isTwoPlayerMode ? player2 : nullptr));
 
     if (game_over == true) {
         currentLevel = 1;
