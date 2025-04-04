@@ -8,9 +8,11 @@ EnemySpawner::EnemySpawner(SDL_Texture* enemyTexture,
                            const vector<Wall*>* walls,
                            int playerX, int playerY,
                            int baseX, int baseY,
-                           PlayerTank* player)
+                           PlayerTank* player,
+                           PlayerTank* player2)
     : enemyTexture(enemyTexture), enemies(enemies), aiControllers(aiControllers),
-      walls(walls), playerX(playerX), playerY(playerY), baseX(baseX), baseY(baseY), player(player)
+      walls(walls), playerX(playerX), playerY(playerY), baseX(baseX), baseY(baseY), player(player),
+      player2X(0), player2Y(0), player2(player2)
 {
     if (!enemyTexture) {
         std::cerr << "enemyTexture không hợp lệ!" << std::endl;
@@ -34,7 +36,7 @@ void EnemySpawner::spawnEnemies(int maxEnemies, int spawnInterval) {
         newEnemy->active = true;
         enemies.push_back(newEnemy);
 
-        aiControllers.push_back(new AIController(newEnemy, walls, &enemies, player));
+        aiControllers.push_back(new AIController(newEnemy, walls, &enemies, player, player2));
         lastSpawnTime = currentTime;
     }
     enemySpawned++;
@@ -62,6 +64,19 @@ bool EnemySpawner::findValidSpawnPosition(int& outX, int& outY) {
             if (enemy->active && SDL_HasIntersection(&spawnRect, &enemy->rect)) {
                 valid = false;
                 break;
+            }
+        }
+
+        /// Kiểm tra va chạm với player1
+        if (player){
+            if(SDL_HasIntersection(&spawnRect, &player->rect)) {
+                valid = false;
+            }
+        }
+
+        if (player2){
+            if(SDL_HasIntersection(&spawnRect, &player2->rect)) {
+                valid = false;
             }
         }
 

@@ -77,7 +77,7 @@ Game::Game(): player(100, 100, nullptr){
         player2 = nullptr;
     }
 
-    enemySpawner = new EnemySpawner(enemyTexture, enemies, aiControllers, &walls, player.x, player.y, base->x, base->y, &player);
+    enemySpawner = new EnemySpawner(enemyTexture, enemies, aiControllers, &walls, player.x, player.y, base->x, base->y, &player, nullptr);
 }
 
 Game::~Game() {
@@ -246,8 +246,7 @@ void Game::handleEvents() {
             dy2 = -MOVE_SPEED;
         } else if (keyState[SDL_SCANCODE_S]) {
             dy2 = MOVE_SPEED;
-        }
-        if (keyState[SDL_SCANCODE_A]) {
+        } else if (keyState[SDL_SCANCODE_A]) {
             dx2 = -MOVE_SPEED;
         } else if (keyState[SDL_SCANCODE_D]) {
             dx2 = MOVE_SPEED;
@@ -335,7 +334,7 @@ void Game::update() {
         }
     }
 
-    /// Đạn enemy bắn trúng Player 2
+    ///Đạn enemy bắn trúng Player 2
     if (isTwoPlayerMode && player2 != nullptr) {
         for (auto& enemy : enemies) {
             for (auto& bullet : enemy->bullets) {
@@ -351,6 +350,20 @@ void Game::update() {
                     if (!player.alive && !player2->alive && player.lives == 0 && player2->lives == 0) {
                         game_over = true;
                         return;
+                    }
+                }
+            }
+        }
+    }
+
+    ///Đạn player2 trúng đạn enemy
+    if (isTwoPlayerMode && player2 != nullptr){
+        for(auto& p_bullet : player2->bullets){
+            for (auto& enemy : enemies) {
+                for (auto& e_bullet : enemy->bullets) {
+                    if (SDL_HasIntersection(&p_bullet.rect, &e_bullet.rect)){
+                        p_bullet.active = false;
+                        e_bullet.active = false;
                     }
                 }
             }
@@ -421,6 +434,7 @@ void Game::update() {
             }
         }
     };
+
     ///Kiểm tra va chạm đạn với enemy
     auto handleBulletEnemyCollision = [&](std::vector<Bullet>& bullets, int scoreValue) {
         for (auto& bullet : bullets) {
@@ -538,9 +552,13 @@ void Game::run() {
             if (isTwoPlayerMode) {
                 player2 = new PlayerTank(10 * TILE_SIZE, 13 * TILE_SIZE, renderer);
                 player2->initPlayer2Animations(player2->texture);
+                enemySpawner = new EnemySpawner(enemyTexture, enemies, aiControllers, &walls,
+                                                player.x, player.y, base->x, base->y, &player, player2);
                 P2_spawned = false;
             } else {
                 player2 = nullptr;
+                enemySpawner = new EnemySpawner(enemyTexture, enemies, aiControllers, &walls,
+                                                player.x, player.y, base->x, base->y, &player, nullptr);
                 P2_spawned = false;
             }
         }
@@ -656,7 +674,7 @@ void Game::resetGame() {
     if (enemySpawner != nullptr) {
         delete enemySpawner;
     }
-    enemySpawner = new EnemySpawner(enemyTexture, enemies, aiControllers, &walls, player.x, player.y, base->x, base->y, &player);
+    enemySpawner = new EnemySpawner(enemyTexture, enemies, aiControllers, &walls, player.x, player.y, base->x, base->y, &player, nullptr);
 
     if (game_over == true) {
         currentLevel = 1;

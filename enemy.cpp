@@ -41,38 +41,38 @@ EnemyTank::~EnemyTank() {
     texture = nullptr;
 }
 
-EnemyTank::EnemyTank(EnemyTank&& other) noexcept
-    : x(other.x), y(other.y), dirX(other.dirX), dirY(other.dirY), rect(other.rect),
-      active(other.active), texture(other.texture),
-      upAnim(std::move(other.upAnim)), downAnim(std::move(other.downAnim)),
-      leftAnim(std::move(other.leftAnim)), rightAnim(std::move(other.rightAnim)),
-      bullets(std::move(other.bullets)) {
-    currentAnim = other.currentAnim;
-    other.texture = nullptr; /// Đảm bảo texture không bị giải phóng
-}
-
-EnemyTank& EnemyTank::operator=(EnemyTank&& other) noexcept {
-    if (this != &other) {
-        x = other.x;
-        y = other.y;
-        dirX = other.dirX;
-        dirY = other.dirY;
-        rect = other.rect;
-        active = other.active;
-
-        /// Di chuyển animation và texture
-        texture = other.texture;
-        upAnim = std::move(other.upAnim);
-        downAnim = std::move(other.downAnim);
-        leftAnim = std::move(other.leftAnim);
-        rightAnim = std::move(other.rightAnim);
-        bullets = std::move(other.bullets);
-        currentAnim = other.currentAnim;
-
-        other.texture = nullptr;
-    }
-    return *this;
-}
+//EnemyTank::EnemyTank(EnemyTank&& other) noexcept
+//    : x(other.x), y(other.y), dirX(other.dirX), dirY(other.dirY), rect(other.rect),
+//      active(other.active), texture(other.texture),
+//      upAnim(std::move(other.upAnim)), downAnim(std::move(other.downAnim)),
+//      leftAnim(std::move(other.leftAnim)), rightAnim(std::move(other.rightAnim)),
+//      bullets(std::move(other.bullets)) {
+//    currentAnim = other.currentAnim;
+//    other.texture = nullptr; /// Đảm bảo texture không bị giải phóng
+//}
+//
+//EnemyTank& EnemyTank::operator=(EnemyTank&& other) noexcept {
+//    if (this != &other) {
+//        x = other.x;
+//        y = other.y;
+//        dirX = other.dirX;
+//        dirY = other.dirY;
+//        rect = other.rect;
+//        active = other.active;
+//
+//        /// Di chuyển animation và texture
+//        texture = other.texture;
+//        upAnim = std::move(other.upAnim);
+//        downAnim = std::move(other.downAnim);
+//        leftAnim = std::move(other.leftAnim);
+//        rightAnim = std::move(other.rightAnim);
+//        bullets = std::move(other.bullets);
+//        currentAnim = other.currentAnim;
+//
+//        other.texture = nullptr;
+//    }
+//    return *this;
+//}
 
 void EnemyTank::shoot() {
     bool canShoot = true;

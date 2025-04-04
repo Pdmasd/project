@@ -214,6 +214,7 @@ void GameScreen::showGameOver(SDL_Renderer* renderer, int score, bool& backToMen
     }
     SDL_DestroyTexture(gameOverTexture);
 }
+
 void GameScreen::showVictory(SDL_Renderer* renderer, int score, bool& backToMenu) {
     SDL_Texture* victoryTexture = IMG_LoadTexture(renderer, "image/victory.png");
     if (!victoryTexture) {
