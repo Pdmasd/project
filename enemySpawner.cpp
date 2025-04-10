@@ -31,8 +31,11 @@ void EnemySpawner::spawnEnemies(int maxEnemies, int spawnInterval) {
 
     int spawnX = 0, spawnY = 0;
     if (findValidSpawnPosition(spawnX, spawnY)) {
+        /// Xác suất spawn enemy enhanced
+        bool isEnhanced = (rand() % 100 < 30);
+
         /// Tạo enemy mới tại vị trí spawn hợp lệ
-        EnemyTank* newEnemy = new EnemyTank(spawnX, spawnY, enemyTexture);
+        EnemyTank* newEnemy = new EnemyTank(spawnX, spawnY, enemyTexture, isEnhanced);
         newEnemy->active = true;
         enemies.push_back(newEnemy);
 

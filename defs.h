@@ -21,9 +21,9 @@ const int FULL_SCREEN_HEIGHT = 600;
 const int TILE_SIZE = 40;
 const int HIT_BOX = 35;
 
-const float MOVE_SPEED = 3.5;
+const float MOVE_SPEED = 4;
 const float BULLET_SPEED = 3;
-const int ENEMY_SHOOT_CHANGE = 8;     ///(%)
+const int ENEMY_SHOOT_CHANGE = 10;     ///(%)
 const int MAX_LIVES = 4;
 
 const int MAP_WIDTH = SCREEN_WIDTH / TILE_SIZE;     ///=15

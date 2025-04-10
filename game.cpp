@@ -7,7 +7,7 @@ SDL_Texture* enemyTexture = nullptr;
 EnemySpawner* enemySpawner = nullptr;
 bool isTwoPlayerMode = false;
 
-///Làm trong suốt phần màu (gần) đen trong sheet
+///Làm trong suốt phần màu đen trong sheet
 SDL_Texture* loadTransparentSprite(const std::string& path, SDL_Renderer* renderer) {
     SDL_Surface* surface = IMG_Load(path.c_str());
     if (!surface) {
@@ -23,7 +23,7 @@ SDL_Texture* loadTransparentSprite(const std::string& path, SDL_Renderer* render
     return texture;
 }
 
-Game::Game(): player(100, 100, nullptr){
+Game::Game(): player(0, 0, nullptr){
     running = true;
     pause = false;
 
@@ -93,14 +93,20 @@ Game::~Game() {
     }
     aiControllers.clear();
 
+    delete &player;
+
     if (player2 != nullptr) {
         delete player2;
     }
 
     delete enemySpawner;
 
+    Mix_CloseAudio();
+    Mix_Quit();
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    IMG_Quit();
     SDL_Quit();
 }
 
@@ -503,6 +509,7 @@ void Game::render() {
             SDL_RenderFillRect(renderer, &tile);
         }
     }
+    base->render(renderer);
 
     player.render(renderer);
 
@@ -513,8 +520,6 @@ void Game::render() {
     for(auto &enemy : enemies){
         enemy->render(renderer);
     }
-
-    base->render(renderer);
 
     for (auto& wall : walls) {
         wall->render(renderer);

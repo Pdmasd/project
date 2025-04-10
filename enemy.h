@@ -22,20 +22,17 @@ public:
     bool active;
     vector<Bullet> bullets;
 
-    EnemyTank(int startX, int startY, SDL_Texture* sharedTexture);
+    EnemyTank(int startX, int startY, SDL_Texture* sharedTexture, bool enhanced = false);
     ~EnemyTank();
 
     SDL_Texture* texture;   // Sprite sheet của enemy
     Animation* currentAnim; // Animation hiện tại
     Animation upAnim, downAnim, leftAnim, rightAnim;
 
-    EnemyTank(EnemyTank&& other) noexcept;
-
-    EnemyTank& operator=(EnemyTank&& other) noexcept;
-
     void shoot();
     void updateBullets();
     void render(SDL_Renderer* renderer);
+    bool isEnhanced;
 };
 
 #endif

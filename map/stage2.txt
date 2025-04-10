@@ -7,7 +7,7 @@
 /SBB.LLLLSBB../
 /WW...B.B..B../
 /....SS......./
-/SB.B.BWB.LLLW/
+/SB.B.BWB.LBBW/
 /.B.B...B.LLLW/
 /.B.........LL/
 /.B...BBB....B/

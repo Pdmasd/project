@@ -58,7 +58,11 @@ void AIController::Update() {
     MovePatrol();
 
     /// Xác suất bắn ngẫu nhiên
-    if (rand() % 100 < ENEMY_SHOOT_CHANGE) {
+    int shootChance = ENEMY_SHOOT_CHANGE;
+    if (controlledEnemy->isEnhanced) {
+        shootChance *= 5;
+    }
+    if (rand() % 100 < shootChance) {
         controlledEnemy->shoot();
     }
     controlledEnemy->updateBullets();

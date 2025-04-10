@@ -17,7 +17,6 @@ GameScreen::~GameScreen() {
     TTF_Quit();
 }
 
-
 void GameScreen::renderText(const std::string& text, int x, int y, SDL_Color color) {
     SDL_Surface* surface = TTF_RenderText_Solid(font, text.c_str(), color);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);

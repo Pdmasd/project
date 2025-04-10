@@ -21,28 +21,6 @@ Wall::~Wall() {
     }
 }
 
-Wall::Wall(Wall&& other) noexcept
-    : x(other.x), y(other.y), rect(other.rect), texture(other.texture),
-      active(other.active), type(other.type) {
-    other.texture = nullptr;
-}
-
-Wall& Wall::operator=(Wall&& other) noexcept {
-    if (this != &other) {
-        if (texture) SDL_DestroyTexture(texture);
-
-        x = other.x;
-        y = other.y;
-        rect = other.rect;
-        texture = other.texture;
-        active = other.active;
-        type = other.type;
-
-        other.texture = nullptr;
-    }
-    return *this;
-}
-
 void Wall::render(SDL_Renderer* renderer) {
     if (!active || !texture)
         return;

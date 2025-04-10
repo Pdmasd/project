@@ -3,14 +3,16 @@
 #include "player.h"
 #include "SoundManager.h"
 
-EnemyTank::EnemyTank(int startX, int startY, SDL_Texture* sharedTexture) {
+EnemyTank::EnemyTank(int startX, int startY, SDL_Texture* sharedTexture, bool enhanced)
+    : isEnhanced(enhanced)
+{
     moveDelay = 15;
     shootDelay = 5;
     x = startX;
     y = startY;
     rect = {x, y, TILE_SIZE, TILE_SIZE};
     dirX = 0;
-    dirY = 1;
+    dirY = MOVE_SPEED;
     active = true;
 
     texture = sharedTexture;
@@ -22,17 +24,25 @@ EnemyTank::EnemyTank(int startX, int startY, SDL_Texture* sharedTexture) {
     rightAnim = Animation(texture, 16, 16, 100);
 
     /// Thêm frame cho từng hướng
-    upAnim.addFrame(128, 0);
-    upAnim.addFrame(144, 0);
+    int yOffset;
 
-    downAnim.addFrame(192, 0);
-    downAnim.addFrame(208, 0);
+    if(enhanced){
+        yOffset = 80;
+    } else{
+        yOffset = 0;
+    }
 
-    leftAnim.addFrame(160, 0);
-    leftAnim.addFrame(176, 0);
+    upAnim.addFrame(128, yOffset);
+    upAnim.addFrame(144, yOffset);
 
-    rightAnim.addFrame(224, 0);
-    rightAnim.addFrame(240, 0);
+    downAnim.addFrame(192, yOffset);
+    downAnim.addFrame(208, yOffset);
+
+    leftAnim.addFrame(160, yOffset);
+    leftAnim.addFrame(176, yOffset);
+
+    rightAnim.addFrame(224, yOffset);
+    rightAnim.addFrame(240, yOffset);
 
     currentAnim = &downAnim; /// Mặc định quay xuống
 }
@@ -40,39 +50,6 @@ EnemyTank::EnemyTank(int startX, int startY, SDL_Texture* sharedTexture) {
 EnemyTank::~EnemyTank() {
     texture = nullptr;
 }
-
-//EnemyTank::EnemyTank(EnemyTank&& other) noexcept
-//    : x(other.x), y(other.y), dirX(other.dirX), dirY(other.dirY), rect(other.rect),
-//      active(other.active), texture(other.texture),
-//      upAnim(std::move(other.upAnim)), downAnim(std::move(other.downAnim)),
-//      leftAnim(std::move(other.leftAnim)), rightAnim(std::move(other.rightAnim)),
-//      bullets(std::move(other.bullets)) {
-//    currentAnim = other.currentAnim;
-//    other.texture = nullptr; /// Đảm bảo texture không bị giải phóng
-//}
-//
-//EnemyTank& EnemyTank::operator=(EnemyTank&& other) noexcept {
-//    if (this != &other) {
-//        x = other.x;
-//        y = other.y;
-//        dirX = other.dirX;
-//        dirY = other.dirY;
-//        rect = other.rect;
-//        active = other.active;
-//
-//        /// Di chuyển animation và texture
-//        texture = other.texture;
-//        upAnim = std::move(other.upAnim);
-//        downAnim = std::move(other.downAnim);
-//        leftAnim = std::move(other.leftAnim);
-//        rightAnim = std::move(other.rightAnim);
-//        bullets = std::move(other.bullets);
-//        currentAnim = other.currentAnim;
-//
-//        other.texture = nullptr;
-//    }
-//    return *this;
-//}
 
 void EnemyTank::shoot() {
     bool canShoot = true;
