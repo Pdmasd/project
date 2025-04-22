@@ -46,7 +46,7 @@ void EnemySpawner::spawnEnemies(int maxEnemies, int spawnInterval) {
 }
 
 bool EnemySpawner::findValidSpawnPosition(int& outX, int& outY) {
-    constexpr int maxAttempts = 100; // Số lần thử tối đa
+    constexpr int maxAttempts = 100; /// Số lần thử tối đa
 
     for (int attempt = 0; attempt < maxAttempts; ++attempt) {
         int spawnX = (rand() % (SCREEN_WIDTH / TILE_SIZE - 2) + 1) * TILE_SIZE;

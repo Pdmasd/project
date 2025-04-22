@@ -285,11 +285,11 @@ void Game::update() {
     SoundManager::loadSound("explosion", "sound/explosion.wav");
 
     if (currentLevel == 3) {
-        enemySpawner->spawnEnemies(enemyCount3, 2500);
+        enemySpawner->spawnEnemies(enemyCount3, 3000);
     } else if (currentLevel == 2) {
-        enemySpawner->spawnEnemies(enemyCount2, 3000);
+        enemySpawner->spawnEnemies(enemyCount2, 4000);
     } else {
-        enemySpawner->spawnEnemies(enemyCount1, 4000);
+        enemySpawner->spawnEnemies(enemyCount1, 5000);
     }
 
     /// Cập nhật AI cho mỗi enemy thông qua các AIController
